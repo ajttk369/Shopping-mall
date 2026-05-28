@@ -1,0 +1,14 @@
+# Local notes and temporary preview assets
+admin.txt
+add.txt
+images/favicon-concepts*.png
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Dependency/build folders, in case tools are added later
+node_modules/
+dist/
+build/

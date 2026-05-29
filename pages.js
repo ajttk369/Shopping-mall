@@ -4,7 +4,8 @@ const pageProducts = [
   { id: 3, name: "와이드 핏 블랙 슬랙스", brand: "NEAT FIELD", category: "PANTS", price: 69000, discount: 20, image: "images/1473966968600-fa801b869a1a.jpg", rating: 4.9, sizes: ["28", "30", "32", "34"] },
   { id: 4, name: "레더 무드 숄더 백", brand: "STUDIO LOW", category: "BAG", price: 76000, discount: 15, image: "images/1590874103328-eac38a683ce7.jpg", rating: 4.6, sizes: ["FREE"] },
   { id: 9, name: "테크 러너 스니커즈", brand: "URBAN EDGE", category: "SHOES", price: 129000, discount: 25, image: "images/1608231387042-66d1773070a5.jpg", rating: 4.9, sizes: ["250", "260", "270", "280"] },
-  { id: 11, name: "더블 브레스티드 코트", brand: "BLACK STUDIO", category: "OUTER", price: 189000, discount: 18, image: "images/1544022613-e87ca75a784a.jpg", rating: 4.8, sizes: ["S", "M", "L"] }
+  { id: 11, name: "더블 브레스티드 코트", brand: "BLACK STUDIO", category: "OUTER", price: 189000, discount: 18, image: "images/1544022613-e87ca75a784a.jpg", rating: 4.8, sizes: ["S", "M", "L"] },
+  { id: 19, name: "에센셜 와플 크롭 반팔티_5color", brand: "BLACK FIT", category: "TOP", price: 39000, discount: 12, image: "images/products/essential-waffle-crop-tee-product.png", rating: 4.9, sizes: ["S", "M", "L", "XL"] }
 ];
 
 const pageBrands = [
@@ -13,6 +14,26 @@ const pageBrands = [
   { name: "VOID ARCHIVE", copy: "도시적인 아우터와 테크 무드.", image: "images/1543076447-215ad9ba6923.jpg" },
   { name: "NEAT FIELD", copy: "슬랙스와 셋업 중심의 정돈된 캐주얼.", image: "images/1473966968600-fa801b869a1a.jpg" }
 ];
+
+pageProducts.splice(0, pageProducts.length,
+  { id: 1, name: "에센셜 와플 크롭 반팔티_5color", brand: "BLACK FIT", category: "TOP", price: 39000, discount: 12, image: "images/products/essential-waffle-crop-tee-product.png", rating: 4.9, sizes: ["S", "M", "L", "XL"] },
+  { id: 2, name: "SY PUNCHING CAP SLEEVE TEE", brand: "STUDIO LOW", category: "TOP", price: 42000, discount: 10, image: "images/products/SY PUNCHING CAP SLEEVE TEE.png", rating: 4.7, sizes: ["S", "M", "L"] },
+  { id: 3, name: "VLAD 빈티지 ARCH 링거 티셔츠_2 COLOR", brand: "VOID ARCHIVE", category: "TOP", price: 36000, discount: 8, image: "images/products/VLAD 빈티지 ARCH 링거 티셔츠_2 COLOR.png", rating: 4.8, sizes: ["S", "M", "L", "XL"] },
+  { id: 4, name: "워셔블 데일리 반팔 니트_8color", brand: "MONO LANE", category: "TOP", price: 49000, discount: 15, image: "images/products/워셔블 데일리 반팔 니트_8color.png", rating: 4.6, sizes: ["S", "M", "L"] },
+  { id: 7, name: "스트라이프 집 트랙탑", brand: "BLACK STUDIO", category: "OUTER", price: 79000, discount: 16, image: "images/products/스트라이프 집 트랙탑.png", rating: 4.8, sizes: ["S", "M", "L", "XL"] },
+  { id: 8, name: "와플 클래식 트랙탑 - 원더화이트", brand: "STUDIO LOW", category: "OUTER", price: 89000, discount: 14, image: "images/products/와플 클래식 트랙탑 - 원더화이트.png", rating: 4.9, sizes: ["S", "M", "L", "XL"] },
+  { id: 11, name: "BDU 드로우스트링 릴렉스드 팬츠", brand: "NEAT FIELD", category: "PANTS", price: 76000, discount: 18, image: "images/products/BDU 드로우스트링 릴렉스드 팬츠.png", rating: 4.8, sizes: ["28", "30", "32", "34"] },
+  { id: 13, name: "스트링 밴딩 빈티지 다크 블루 워싱 포켓 카고 와이드 버뮤다 데님 반바지", brand: "BLACK STUDIO", category: "PANTS", price: 69000, discount: 15, image: "images/products/스트링 밴딩 빈티지 다크 블루 워싱 포켓 카고 와이드 버뮤다 데님 반바지.png", rating: 4.6, sizes: ["S", "M", "L", "XL"] },
+  { id: 16, name: "Flipflop 02", brand: "URBAN EDGE", category: "SHOES", price: 39000, discount: 8, image: "images/products/Flipflop 02.png", rating: 4.5, sizes: ["240", "250", "260", "270", "280"] },
+  { id: 19, name: "화이트라벨 일렉트론 엘티 30 DARK GRAY", brand: "BLACK STUDIO", category: "BAG", price: 118000, discount: 13, image: "images/products/화이트라벨 일렉트론 엘티 30 DARK GRAY.png", rating: 4.8, sizes: ["FREE"] },
+  { id: 21, name: "셀리나 리젠나일론 토트 크로스백", brand: "MONO LANE", category: "BAG", price: 86000, discount: 12, image: "images/products/셀리나 리젠나일론 토트 크로스백.png", rating: 4.7, sizes: ["FREE"] },
+  { id: 24, name: "WAYFARER 선글라스 - 매트 블랙", brand: "NOIR MUSE", category: "ACC", price: 59000, discount: 9, image: "images/products/WAYFARER 선글라스 - 매트 블랙.png", rating: 4.7, sizes: ["FREE"] },
+  { id: 28, name: "텐셀 린넨 크롭 하프 셔츠", brand: "LOW CLASSIC", category: "TOP", price: 69000, discount: 15, image: "images/products/텐셀 린넨 크롭 하프 셔츠.png", rating: 4.8, sizes: ["S", "M", "L"] },
+  { id: 29, name: "DGMA PATCHED SEMI BAGGY DENIM PANTS", brand: "BLACK STUDIO", category: "PANTS", price: 96000, discount: 14, image: "images/products/DGMA PATCHED SEMI BAGGY DENIM PANTS.png", rating: 4.8, sizes: ["28", "30", "32", "34"] },
+  { id: 36, name: "뉴발란스 U740", brand: "URBAN EDGE", category: "SHOES", price: 129000, discount: 7, image: "images/products/뉴발란스 U740.png", rating: 4.9, sizes: ["240", "250", "260", "270", "280"] },
+  { id: 38, name: "이클립스 라이트팩", brand: "VOID ARCHIVE", category: "BAG", price: 89000, discount: 11, image: "images/products/이클립스 라이트팩.png", rating: 4.8, sizes: ["FREE"] },
+  { id: 40, name: "뉴 LA 볼드 코튼 볼캡", brand: "BLACK STUDIO", category: "ACC", price: 42000, discount: 8, image: "images/products/뉴 LA 볼드 코튼 볼캡.png", rating: 4.7, sizes: ["FREE"] }
+);
 
 const pageFormatPrice = (price) => `${Number(price).toLocaleString("ko-KR")}원`;
 const pageSalePrice = (product) => Math.round(product.price * (100 - product.discount) / 100);

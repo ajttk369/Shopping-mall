@@ -374,7 +374,17 @@ a { color: inherit; text-decoration: none; }
 .product-card:hover { transform: translateY(-5px); }
 .product-image { position: relative; width: 100%; aspect-ratio: 3/4; overflow: hidden; border: 1px solid rgba(0,0,0,.08); background: #f4f1ec; border-radius: 6px; box-shadow: 0 1px 0 rgba(0,0,0,.04); transition: box-shadow .28s var(--ease), border-color .28s var(--ease); }
 .product-card:hover .product-image { border-color: rgba(0,0,0,.16); box-shadow: var(--soft-shadow); }
-.product-image img { height: 100%; object-fit: cover; transition: transform .45s var(--ease), filter .45s var(--ease); }
+.product-image img { height: 100%; object-fit: cover; transition: transform .45s var(--ease), filter .45s var(--ease), opacity .32s var(--ease); }
+.product-hover-img {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  object-fit: contain;
+  background: #f5f5f5;
+  padding: 10px;
+}
+.product-card:hover .product-main-img { opacity: 0; }
+.product-card:hover .product-hover-img { opacity: 1; }
 .product-card:hover .product-image img { transform: scale(1.055); filter: saturate(.92) contrast(1.02); }
 .rank-badge, .label-badge {
   position: absolute;
@@ -1624,8 +1634,8 @@ body.subpage { background: #fff; }
   .hamburger { display: block; }
   .header-inner { grid-template-columns: auto 1fr auto; gap: 12px; padding: 0 16px; }
   .brand-logo { justify-self: start; }
-  .main-nav { position: absolute; left: 0; right: 0; top: 100%; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px; background: rgba(255,255,255,.98); border-bottom: 1px solid var(--line); box-shadow: 0 18px 44px rgba(0,0,0,.08); transform: translateY(-130%); transition: transform .25s ease; }
-  .main-nav.open { transform: translateY(0); }
+  .main-nav { position: absolute; left: 0; right: 0; top: 100%; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px; background: rgba(255,255,255,.98); border-bottom: 1px solid var(--line); box-shadow: 0 18px 44px rgba(0,0,0,.08); opacity: 0; visibility: hidden; pointer-events: none; transform: translateY(-12px); transition: opacity .22s var(--ease), visibility .22s var(--ease), transform .22s var(--ease); }
+  .main-nav.open { opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0); }
   .page-link { margin-left: 0; padding-left: 12px; border-left-color: transparent; }
   .more-menu { display: grid; }
   .more-dropdown {
@@ -1660,6 +1670,9 @@ body.subpage { background: #fff; }
     position: static;
     display: flex;
     transform: none;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
     overflow-x: auto;
     padding: 0 12px 12px;
     border-top: 1px solid rgba(0,0,0,.06);

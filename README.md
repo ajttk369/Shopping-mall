@@ -6,15 +6,6 @@ BLACK FIT은 포트폴리오 제출을 목적으로 제작한 패션 커머스 �
 
 ## Preview
 
-아래 이미지는 포트폴리오 README에서 보여줄 화면 캡처입니다. 이미지를 직접 캡처해서 아래 경로와 파일명으로 저장하면 README에 자동으로 표시됩니다.
-
-```text
-images/readme/preview-desktop-home.png
-images/readme/preview-mobile-home.png
-images/readme/preview-mobile-menu.png
-images/readme/preview-lookbook.png
-```
-
 ![BLACK FIT Desktop Home](images/readme/preview-desktop-home.png)
 
 | Mobile Home | Mobile Menu |

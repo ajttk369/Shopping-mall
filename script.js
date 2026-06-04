@@ -1,25 +1,4 @@
-const baseProducts = [
-  { id: 1, name: "오버사이즈 나일론 후드 파카", brand: "VOID ARCHIVE", category: "OUTER", price: 89000, discount: 18, image: "images/1523398002811-999ca8dec234.jpg", sizes: ["S", "M", "L", "XL"], stock: { S: 4, M: 8, L: 5, XL: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260523, collections: ["Minimal Black Edit", "Summer Layering"] },
-  { id: 2, name: "미니멀 코튼 로고 티셔츠", brand: "MONO LANE", category: "TOP", price: 32000, discount: 12, image: "images/1521572163474-6864f9cf17ab.jpg", sizes: ["S", "M", "L"], stock: { S: 7, M: 12, L: 4 }, rating: 4.7, isBest: true, isNew: false, createdAt: 20260510, collections: ["Minimal Black Edit"] },
-  { id: 3, name: "와이드 턱 블랙 슬랙스", brand: "NEAT FIELD", category: "PANTS", price: 69000, discount: 20, image: "images/1473966968600-fa801b869a1a.jpg", sizes: ["28", "30", "32", "34"], stock: { 28: 3, 30: 9, 32: 6, 34: 1 }, rating: 4.9, isBest: true, isNew: false, createdAt: 20260428, collections: ["Minimal Black Edit"] },
-  { id: 4, name: "레더 무드 숄더 백", brand: "STUDIO LOW", category: "BAG", price: 76000, discount: 15, image: "images/1590874103328-eac38a683ce7.jpg", sizes: ["FREE"], stock: { FREE: 8 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260524, collections: ["Summer Layering"] },
-  { id: 5, name: "클린 레더 스니커즈", brand: "URBAN EDGE", category: "SHOES", price: 99000, discount: 10, image: "images/1549298916-b41d501d3772.jpg", sizes: ["250", "260", "270", "280"], stock: { 250: 2, 260: 5, 270: 7, 280: 3 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260415, collections: ["Sneaker Utility"] },
-  { id: 6, name: "라이트웨이트 워머 블루종", brand: "VOID ARCHIVE", category: "OUTER", price: 118000, discount: 22, image: "images/1543076447-215ad9ba6923.jpg", sizes: ["M", "L", "XL"], stock: { M: 4, L: 0, XL: 3 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260521, collections: ["Summer Layering"] },
-  { id: 7, name: "소프트 니트 집업", brand: "STUDIO LOW", category: "TOP", price: 59000, discount: 17, image: "images/1516826957135-700dedea698c.jpg", sizes: ["S", "M", "L"], stock: { S: 3, M: 6, L: 0 }, rating: 4.5, isBest: false, isNew: true, createdAt: 20260520, collections: ["Summer Layering"] },
-  { id: 8, name: "카펜터 워싱 데님 팬츠", brand: "NEAT FIELD", category: "PANTS", price: 82000, discount: 14, image: "images/1541099649105-f69ad21f3246.jpg", sizes: ["28", "30", "32", "34"], stock: { 28: 2, 30: 5, 32: 5, 34: 2 }, rating: 4.7, isBest: true, isNew: false, createdAt: 20260430, collections: ["Summer Layering"] },
-  { id: 9, name: "테크 러너 스니커즈", brand: "URBAN EDGE", category: "SHOES", price: 129000, discount: 25, image: "images/1608231387042-66d1773070a5.jpg", sizes: ["250", "260", "270", "280", "290"], stock: { 250: 1, 260: 4, 270: 6, 280: 5, 290: 0 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260525, collections: ["Sneaker Utility"] },
-  { id: 10, name: "컴팩트 메신저 크로스백", brand: "MONO LANE", category: "BAG", price: 54000, discount: 8, image: "images/1622560480605-d83c853bc5c3.jpg", sizes: ["FREE"], stock: { FREE: 11 }, rating: 4.4, isBest: false, isNew: false, createdAt: 20260412, collections: ["Minimal Black Edit"] },
-  { id: 11, name: "더블 브레스티드 코트", brand: "BLACK STUDIO", category: "OUTER", price: 189000, discount: 18, image: "images/1544022613-e87ca75a784a.jpg", sizes: ["S", "M", "L"], stock: { S: 2, M: 5, L: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260526, collections: ["Minimal Black Edit"] },
-  { id: 12, name: "슬림 드레이프 니트", brand: "LOW CLASSIC", category: "TOP", price: 73000, discount: 9, image: "images/1434389677669-e08b4cac3105.jpg", sizes: ["S", "M", "L"], stock: { S: 4, M: 4, L: 1 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260522, collections: ["Minimal Black Edit"] },
-  { id: 13, name: "바이커 레더 재킷", brand: "NOIR MUSE", category: "OUTER", price: 248000, discount: 12, image: "images/1551028719-00167b16eac5.jpg", sizes: ["M", "L", "XL"], stock: { M: 2, L: 3, XL: 1 }, rating: 4.9, isBest: true, isNew: false, createdAt: 20260422, collections: ["Minimal Black Edit"] },
-  { id: 14, name: "스퀘어 첼시 부츠", brand: "URBAN EDGE", category: "SHOES", price: 148000, discount: 15, image: "images/1605812860427-4024433a70fd.jpg", sizes: ["240", "250", "260", "270"], stock: { 240: 2, 250: 0, 260: 3, 270: 4 }, rating: 4.7, isBest: true, isNew: false, createdAt: 20260402, collections: ["Sneaker Utility"] },
-  { id: 15, name: "미니멀 토트 백", brand: "MONO LANE", category: "BAG", price: 88000, discount: 7, image: "images/1594223274512-ad4803739b7c.jpg", sizes: ["FREE"], stock: { FREE: 9 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260425, collections: ["Summer Layering"] },
-  { id: 16, name: "메탈 프레임 선글라스", brand: "NOIR MUSE", category: "ACC", price: 49000, discount: 5, image: "images/1511499767150-a48a237f0083.jpg", sizes: ["FREE"], stock: { FREE: 15 }, rating: 4.2, isBest: false, isNew: true, createdAt: 20260514, collections: ["Summer Layering"] },
-  { id: 17, name: "코튼 와이드 카고 팬츠", brand: "BLACK STUDIO", category: "PANTS", price: 79000, discount: 18, image: "images/1517438476312-10d79c077509.jpg", sizes: ["28", "30", "32", "34", "36"], stock: { 28: 4, 30: 4, 32: 2, 34: 1, 36: 0 }, rating: 4.6, isBest: false, isNew: false, createdAt: 20260418, collections: ["Sneaker Utility"] },
-  { id: 18, name: "로우 프로파일 스니커즈", brand: "STUDIO LOW", category: "SHOES", price: 112000, discount: 13, image: "images/1607522370275-f14206abe5d3.jpg", sizes: ["240", "250", "260", "270", "280"], stock: { 240: 2, 250: 6, 260: 7, 270: 3, 280: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260513, collections: ["Sneaker Utility"] }
-  ,
-  { id: 19, name: "에센셜 와플 크롭 반팔티_5color", brand: "BLACK FIT", category: "TOP", price: 39000, discount: 12, image: "images/products/essential-waffle-crop-tee-product.png", hoverImage: "images/products/essential-waffle-crop-tee-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 8, M: 12, L: 9, XL: 4 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260529, collections: ["Minimal Black Edit", "Summer Layering"], colors: ["#303239", "#2f2f2d", "#f2f2ef", "#9b9b98", "#111111"] }
-];
+const baseProducts = [];
 
 baseProducts.splice(0, baseProducts.length,
   { id: 1, name: "에센셜 와플 크롭 반팔티_5color", brand: "BLACK FIT", category: "TOP", price: 39000, discount: 12, image: "images/products/essential-waffle-crop-tee-product.png", hoverImage: "images/products/essential-waffle-crop-tee-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 8, M: 12, L: 9, XL: 4 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260529, collections: ["Minimal Black Edit", "Summer Layering"], colors: ["#303239", "#2f2f2d", "#f2f2ef", "#9b9b98", "#111111"] },
@@ -471,7 +450,7 @@ function renderCartRecommendations() {
     .filter((product) => !cartIds.has(product.id))
     .filter((product) => !cartCategories.size || cartCategories.has(product.category) || product.isBest)
     .sort((a, b) => averageRating(b) - averageRating(a))
-    .slice(0, 3);
+    .slice(0, state.cart.length ? 2 : 3);
   if (!list.length) {
     els.cartRecommend.innerHTML = "";
     return;
@@ -586,15 +565,11 @@ function closeLayers() {
 }
 
 function gallery(product) {
-  const map = {
-    OUTER: ["images/1543076447-215ad9ba6923.jpg", "images/1551028719-00167b16eac5.jpg"],
-    TOP: ["images/1602810318383-e386cc2a3ccf.jpg", "images/1434389677669-e08b4cac3105.jpg"],
-    PANTS: ["images/1541099649105-f69ad21f3246.jpg", "images/1594633312681-425c7b97ccd1.jpg"],
-    SHOES: ["images/1608231387042-66d1773070a5.jpg", "images/1607522370275-f14206abe5d3.jpg"],
-    BAG: ["images/1594223274512-ad4803739b7c.jpg", "images/1622560480605-d83c853bc5c3.jpg"],
-    ACC: ["images/1511499767150-a48a237f0083.jpg"]
-  };
-  return [product.image, product.hoverImage, ...(map[product.category] || [])].filter(Boolean).slice(0, 3);
+  const relatedImages = products
+    .filter((item) => item.category === product.category && item.id !== product.id)
+    .flatMap((item) => [item.image, item.hoverImage])
+    .filter(Boolean);
+  return [...new Set([product.image, product.hoverImage, ...relatedImages])].slice(0, 3);
 }
 
 function reviewListMarkup(product) {
@@ -775,7 +750,11 @@ function bind() {
   };
   syncScrollUi();
   window.addEventListener("scroll", syncScrollUi, { passive: true });
-  els.menuToggle.addEventListener("click", () => els.nav.classList.toggle("open"));
+  els.menuToggle.addEventListener("click", () => {
+    const isOpen = els.nav.classList.toggle("open");
+    els.menuToggle.classList.toggle("active", isOpen);
+    if (!isOpen) els.moreDropdown?.classList.remove("open");
+  });
   els.moreToggle?.addEventListener("click", (event) => {
     event.stopPropagation();
     els.moreDropdown.classList.toggle("open");
@@ -785,6 +764,8 @@ function bind() {
     if (button.dataset.scrollTarget) {
       $(`#${button.dataset.scrollTarget}`).scrollIntoView({ behavior: "smooth" });
       els.nav.classList.remove("open");
+      els.menuToggle.classList.remove("active");
+      els.moreDropdown?.classList.remove("open");
       return;
     }
     const category = button.dataset.category;
@@ -797,6 +778,8 @@ function bind() {
     renderProducts();
     $("#products").scrollIntoView({ behavior: "smooth" });
     els.nav.classList.remove("open");
+    els.menuToggle.classList.remove("active");
+    els.moreDropdown?.classList.remove("open");
   }));
   els.categoryFilters.addEventListener("click", (event) => {
     const button = event.target.closest("[data-shop-category]");

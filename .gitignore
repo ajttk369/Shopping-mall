@@ -12,3 +12,7 @@ Thumbs.db
 node_modules/
 dist/
 build/
+.venv/
+__pycache__/
+*.pyc
+backend/data/store.json

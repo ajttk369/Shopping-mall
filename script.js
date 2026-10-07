@@ -1107,23 +1107,6 @@ function bind() {
   });
 }
 
-function initReveal() {
-  const targets = $$("section, .product-card, .brand-card, .campaign-grid article, .site-footer");
-  targets.forEach((target) => target.classList.add("reveal"));
-  if (!("IntersectionObserver" in window)) {
-    targets.forEach((target) => target.classList.add("is-visible"));
-    return;
-  }
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add("is-visible");
-      observer.unobserve(entry.target);
-    });
-  }, { threshold: 0.12 });
-  targets.forEach((target) => observer.observe(target));
-}
-
 function init() {
   document.querySelectorAll(".dialog, .side-panel").forEach((layer) => {
     layer.inert = true;
@@ -1147,7 +1130,6 @@ function init() {
     if (activeLayer === els.modal || activeLayer === els.checkoutModal) { closeLayers(); showToast("다른 탭에서 상품 또는 장바구니가 변경되었습니다. 다시 확인해주세요."); }
   });
   bind();
-  initReveal();
   Shop.icons();
   const query = new URLSearchParams(location.search);
   if (query.get("cart") === "1") openLayer("cart");

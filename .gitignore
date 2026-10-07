@@ -16,3 +16,8 @@ build/
 __pycache__/
 *.pyc
 backend/data/store.json
+backend/data/*.lock
+backend/data/*.tmp
+backend/data/*upgrade*.json
+.env
+.env.*

@@ -44,12 +44,12 @@
         </div>
       </nav>
       <div class="header-actions">
-        <button class="icon-btn" id="searchFocus" type="button" aria-label="검색">⌕</button>
-        <button class="icon-btn count-btn" id="wishlistOpen" type="button" aria-label="찜 목록">♥<em id="wishCount">0</em></button>
+        <button class="icon-btn" id="searchFocus" type="button" aria-label="검색" title="검색"><i data-lucide="search" aria-hidden="true">⌕</i></button>
+        <button class="icon-btn count-btn" id="wishlistOpen" type="button" aria-label="찜 목록" title="찜 목록"><i data-lucide="heart" aria-hidden="true">♥</i><em id="wishCount">0</em></button>
         <button class="admin-btn" id="mypageOpen" type="button">My</button>
         <button class="admin-btn" id="adminOpen" type="button" hidden>Admin</button>
         <button class="login-btn" id="loginOpen" type="button">Login</button>
-        <button class="icon-btn count-btn" id="cartOpen" type="button" aria-label="장바구니">▢<em id="cartCount">0</em></button>
+        <button class="icon-btn count-btn" id="cartOpen" type="button" aria-label="장바구니" title="장바구니"><i data-lucide="shopping-bag" aria-hidden="true">▢</i><em id="cartCount">0</em></button>
       </div>
     </div>
   </header>
@@ -64,12 +64,12 @@
         <p>지금 가장 많이 찾는 패션 아이템을 만나보세요.</p>
         <div class="hero-actions">
           <a class="primary-btn" href="#products">Shop Now</a>
-          <a class="secondary-link" href="#products">View Ranking</a>
+          <a class="secondary-link" href="#ranking">View Ranking</a>
         </div>
         <div class="hero-stats" aria-label="BLACK FIT 쇼핑 정보">
-          <div><strong>18</strong><span>Curated Items</span></div>
-          <div><strong>4.8</strong><span>Average Rating</span></div>
-          <div><strong>24H</strong><span>Fresh Drop</span></div>
+          <div><strong id="heroItemCount">-</strong><span>Curated Items</span></div>
+          <div><strong id="heroNewCount">-</strong><span>New Arrivals</span></div>
+          <div><strong>5만원</strong><span>Free Shipping</span></div>
         </div>
       </div>
       <aside class="hero-note">
@@ -96,6 +96,14 @@
       <div><strong>Free Shipping</strong><span>5만원 이상 무료 배송</span></div>
       <div><strong>Easy Exchange</strong><span>사이즈 교환 1회 지원</span></div>
       <div><strong>Curated Drop</strong><span>매주 업데이트되는 셀렉션</span></div>
+    </section>
+
+    <section class="section-block" id="ranking">
+      <div class="section-head">
+        <div><p class="eyebrow">Weekly Ranking</p><h2>랭킹 상품</h2></div>
+        <a class="text-link" href="#products">전체 보기</a>
+      </div>
+      <div class="product-grid" id="rankingGrid"></div>
     </section>
 
     <section class="editorial-section">
@@ -125,7 +133,7 @@
     <section class="section-block campaign-section">
       <div class="section-head">
         <div><p class="eyebrow">Special Exhibition</p><h2>기획전</h2></div>
-        <a class="text-link" href="lookbook.html">서브페이지 보기</a>
+        <a class="text-link" href="lookbook.html">기획전 전체 보기</a>
       </div>
       <div class="campaign-grid">
         <article data-collection="Minimal Black Edit"><span>01</span><h3>Minimal Black Edit</h3><p>블랙 아이템만으로 완성하는 정제된 데일리 룩.</p></article>
@@ -134,13 +142,7 @@
       </div>
     </section>
 
-    <section class="section-block">
-      <div class="section-head">
-        <div><p class="eyebrow">Weekly Ranking</p><h2>랭킹 상품</h2></div>
-        <a class="text-link" href="#products">전체 보기</a>
-      </div>
-      <div class="product-grid" id="rankingGrid"></div>
-    </section>
+
 
     <section class="section-block muted">
       <div class="section-head"><div><p class="eyebrow">Fresh Drop</p><h2>신상품</h2></div></div>
@@ -170,7 +172,7 @@
       <div class="section-head product-head">
         <div><p class="eyebrow">Shop</p><h2>상품 리스트</h2></div>
         <div class="search-wrap">
-          <input id="searchInput" type="search" placeholder="브랜드 또는 상품 검색" autocomplete="off">
+          <input aria-label="상품 또는 브랜드 검색" id="searchInput" type="search" placeholder="브랜드 또는 상품 검색" autocomplete="off">
           <div class="search-assist" id="searchAssist" hidden></div>
         </div>
       </div>
@@ -179,7 +181,7 @@
         <div class="filter-group">
           <button class="chip" id="bestFilter" type="button" data-active="false">BEST</button>
           <button class="chip" id="newFilter" type="button" data-active="false">NEW</button>
-          <select id="sortSelect">
+          <select id="sortSelect" aria-label="상품 정렬">
             <option value="popular">인기순</option>
             <option value="low">낮은 가격순</option>
             <option value="high">높은 가격순</option>
@@ -193,6 +195,7 @@
           </select>
         </div>
       </div>
+      <div class="results-line"><span id="resultCount" role="status"></span><span id="activeFilters"></span><button class="text-btn" id="filterReset" type="button" hidden>필터 초기화</button></div>
       <div class="product-grid" id="productGrid"></div>
       <div class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</div>
     </section>
@@ -223,13 +226,13 @@
     </div>
     <form class="newsletter">
       <label for="newsletterEmail">BLACK FIT 뉴스레터</label>
-      <div><input id="newsletterEmail" type="email" placeholder="email@example.com"><button type="submit">Join</button></div>
+      <div><input id="newsletterEmail" type="email" placeholder="email@example.com" maxlength="254" required><button type="submit">Join</button></div>
     </form>
     <div class="footer-wordmark" aria-hidden="true">BLACK FIT</div>
   </footer>
 
-  <aside class="side-panel" id="cartPanel">
-    <div class="panel-head"><div><p class="eyebrow">Selected Items</p><h2>Cart</h2></div><button class="close-btn" id="cartClose">×</button></div>
+  <aside class="side-panel" id="cartPanel" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="panel-head"><div><p class="eyebrow">Selected Items</p><h2>Cart</h2></div><button class="close-btn" id="cartClose" type="button" aria-label="닫기" title="닫기">×</button></div>
     <div class="panel-list" id="cartList"></div>
     <div class="cart-recommend" id="cartRecommend"></div>
     <div class="summary">
@@ -242,53 +245,55 @@
         <button id="couponApply" type="button">적용</button>
       </div>
       <p class="coupon-message" id="couponMessage"></p>
+      <p class="shipping-hint" id="shippingHint" role="status"></p>
       <button class="primary-btn full" id="checkoutOpen" type="button">Checkout</button>
     </div>
   </aside>
 
-  <aside class="side-panel" id="wishlistPanel">
-    <div class="panel-head"><div><p class="eyebrow">Saved Items</p><h2>Wishlist</h2></div><button class="close-btn" id="wishlistClose">×</button></div>
+  <aside class="side-panel" id="wishlistPanel" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="panel-head"><div><p class="eyebrow">Saved Items</p><h2>Wishlist</h2></div><button class="close-btn" id="wishlistClose" type="button" aria-label="닫기" title="닫기">×</button></div>
     <div class="panel-list" id="wishlistList"></div>
   </aside>
 
-  <aside class="side-panel" id="mypagePanel">
-    <div class="panel-head"><div><p class="eyebrow">Member Desk</p><h2>My Page</h2></div><button class="close-btn" id="mypageClose">×</button></div>
+  <aside class="side-panel" id="mypagePanel" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="panel-head"><div><p class="eyebrow">Member Desk</p><h2>My Page</h2></div><button class="close-btn" id="mypageClose" type="button" aria-label="닫기" title="닫기">×</button></div>
     <div class="panel-list" id="mypageList"></div>
   </aside>
 
-  <aside class="side-panel" id="orderPanel">
-    <div class="panel-head"><div><p class="eyebrow">Tracking</p><h2>Order Detail</h2></div><button class="close-btn" id="orderClose">×</button></div>
+  <aside class="side-panel" id="orderPanel" role="dialog" aria-modal="true" tabindex="-1">
+    <div class="panel-head"><div><p class="eyebrow">Tracking</p><h2>Order Detail</h2></div><button class="close-btn" id="orderClose" type="button" aria-label="닫기" title="닫기">×</button></div>
     <div class="panel-list" id="orderDetail"></div>
   </aside>
 
-  <section class="dialog" id="authModal">
+  <section class="dialog" id="authModal" role="dialog" aria-modal="true" tabindex="-1">
     <div class="dialog-card">
-      <button class="close-btn dialog-close" id="authClose">×</button>
+      <button class="close-btn dialog-close" id="authClose" type="button" aria-label="닫기" title="닫기">×</button>
       <p class="eyebrow">Member Access</p>
       <h2>BLACK FIT 로그인</h2>
-      <p class="guide">일반 로그인은 아무 아이디/비밀번호로 가능합니다.</p>
+      <p class="guide">브라우저 내부 데모입니다. 임의의 아이디와 비밀번호로 체험하며 실제 비밀번호는 입력하지 마세요.</p>
       <form id="loginForm" class="form-grid">
-        <label>아이디<input type="text" id="loginEmail" placeholder="아이디" required></label>
-        <label>비밀번호<input type="password" id="loginPassword" placeholder="비밀번호" required></label>
+        <label>아이디<input type="text" id="loginEmail" maxlength="80" autocomplete="off" placeholder="아이디" required></label>
+        <label>비밀번호<input type="password" id="loginPassword" maxlength="128" autocomplete="off" placeholder="비밀번호" required></label>
         <button class="primary-btn full" type="submit">Login</button>
       </form>
     </div>
   </section>
 
-  <section class="dialog wide" id="adminPanel">
+  <section class="dialog wide" id="adminPanel" role="dialog" aria-modal="true" tabindex="-1">
     <div class="dialog-card">
-      <button class="close-btn dialog-close" id="adminClose">×</button>
+      <button class="close-btn dialog-close" id="adminClose" type="button" aria-label="닫기" title="닫기">×</button>
       <p class="eyebrow">Admin Dashboard</p>
       <h2>상품 관리</h2>
       <div class="admin-layout">
         <form id="adminForm" class="form-grid">
           <input type="hidden" id="adminProductId">
-          <label>상품명<input id="adminName" required></label>
-          <label>브랜드<input id="adminBrand" required></label>
+          <label>상품명<input id="adminName" maxlength="160" required></label>
+          <label>브랜드<input id="adminBrand" maxlength="80" required></label>
           <label>카테고리<select id="adminCategory"><option>OUTER</option><option>TOP</option><option>PANTS</option><option>SHOES</option><option>BAG</option><option>ACC</option></select></label>
-          <label>가격<input id="adminPrice" type="number" required></label>
+          <label>가격<input id="adminPrice" type="number" min="0" max="100000000" step="1" required></label>
           <label>할인율<input id="adminDiscount" type="number" min="0" max="80" required></label>
-          <label>이미지 URL<input id="adminImage" type="url" required></label>
+          <label>상품 이미지<input id="adminImage" type="text" maxlength="2000" placeholder="images/products/파일명.png 또는 https://..." required></label>
+          <label>착용 이미지<input id="adminHoverImage" type="text" maxlength="2000" placeholder="images/products/파일명.png 또는 https://..."></label>
           <label>사이즈<input id="adminSizes" placeholder="S,M,L" required></label>
           <label>사이즈별 재고<input id="adminStock" placeholder="S:4,M:8,L:0"></label>
           <div class="checks"><label><input id="adminBest" type="checkbox"> BEST</label><label><input id="adminNew" type="checkbox"> NEW</label></div>
@@ -310,41 +315,44 @@
     </div>
   </section>
 
-  <section class="dialog" id="checkoutModal">
+  <section class="dialog" id="checkoutModal" role="dialog" aria-modal="true" tabindex="-1">
     <div class="dialog-card">
-      <button class="close-btn dialog-close" id="checkoutClose">×</button>
+      <button class="close-btn dialog-close" id="checkoutClose" type="button" aria-label="닫기" title="닫기">×</button>
       <p class="eyebrow">Checkout</p>
       <h2>주문서 작성</h2>
+      <p class="guide">모의 주문입니다. 실제 결제·배송은 진행되지 않습니다. 실제 개인정보를 입력하지 마세요.</p>
       <form id="checkoutForm" class="form-grid">
-        <label>수령인<input id="orderName" required></label>
-        <label>연락처<input id="orderPhone" required></label>
-        <label>배송지<input id="orderAddress" required></label>
-        <label>배송 요청사항<input id="orderMemo"></label>
+        <label>수령인<input id="orderName" maxlength="60" autocomplete="off" required></label>
+        <label>연락처<input id="orderPhone" type="tel" maxlength="24" autocomplete="off" required></label>
+        <label>배송지<input id="orderAddress" maxlength="300" autocomplete="off" required></label>
+        <label>배송 요청사항<input id="orderMemo" maxlength="500"></label>
         <div class="checkout-total"><span>결제 예정 금액</span><strong id="checkoutTotal">0원</strong></div>
-        <button class="primary-btn full" type="submit">주문 완료하기</button>
+        <button class="primary-btn full" type="submit">모의 주문 완료하기</button>
       </form>
-      <div class="order-complete" id="orderComplete" hidden><strong>주문이 완료되었습니다.</strong><p id="orderNumberText"></p><button class="ghost-btn" id="orderDone">쇼핑 계속하기</button></div>
+      <div class="order-complete" id="orderComplete" hidden><strong>모의 주문이 완료되었습니다.</strong><p id="orderNumberText"></p><button class="ghost-btn" id="orderDone">쇼핑 계속하기</button></div>
     </div>
   </section>
 
-  <section class="dialog product-dialog" id="productModal">
+  <section class="dialog product-dialog" id="productModal" role="dialog" aria-modal="true" tabindex="-1">
     <div class="dialog-card product-card-dialog">
-      <button class="close-btn dialog-close" id="modalClose">×</button>
+      <button class="close-btn dialog-close" id="modalClose" type="button" aria-label="닫기" title="닫기">×</button>
       <div class="modal-grid" id="modalBody"></div>
     </div>
   </section>
 
   <nav class="mobile-bottom-nav">
-    <button data-bottom-action="home" type="button"><span>⌂</span><strong>Home</strong></button>
-    <button data-bottom-action="search" type="button"><span>⌕</span><strong>Search</strong></button>
-    <button data-bottom-action="wish" type="button"><span>♥</span><strong>Wish</strong></button>
-    <button data-bottom-action="cart" type="button"><span>▢</span><strong>Cart</strong></button>
-    <button data-bottom-action="my" type="button"><span>●</span><strong>My</strong></button>
+    <button data-bottom-action="home" type="button"><span><i data-lucide="house" aria-hidden="true">⌂</i></span><strong>Home</strong></button>
+    <button data-bottom-action="search" type="button"><span><i data-lucide="search" aria-hidden="true">⌕</i></span><strong>Search</strong></button>
+    <button data-bottom-action="wish" type="button"><span><i data-lucide="heart" aria-hidden="true">♥</i></span><strong>Wish</strong></button>
+    <button data-bottom-action="cart" type="button"><span><i data-lucide="shopping-bag" aria-hidden="true">▢</i></span><strong>Cart</strong></button>
+    <button data-bottom-action="my" type="button"><span><i data-lucide="user" aria-hidden="true">●</i></span><strong>My</strong></button>
   </nav>
 
   <div class="overlay" id="overlay" hidden></div>
   <button class="back-top" id="backTop" type="button" aria-label="위로 가기">↑</button>
-  <div class="toast" id="toast"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="store.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

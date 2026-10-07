@@ -1,50 +1,7 @@
-const baseProducts = [];
-
-baseProducts.splice(0, baseProducts.length,
-  { id: 1, name: "에센셜 와플 크롭 반팔티_5color", brand: "BLACK FIT", category: "TOP", price: 39000, discount: 12, image: "images/products/essential-waffle-crop-tee-product.png", hoverImage: "images/products/essential-waffle-crop-tee-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 8, M: 12, L: 9, XL: 4 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260529, collections: ["Minimal Black Edit", "Summer Layering"], colors: ["#303239", "#2f2f2d", "#f2f2ef", "#9b9b98", "#111111"] },
-  { id: 2, name: "SY PUNCHING CAP SLEEVE TEE", brand: "STUDIO LOW", category: "TOP", price: 42000, discount: 10, image: "images/products/SY PUNCHING CAP SLEEVE TEE.png", hoverImage: "images/products/SY PUNCHING CAP SLEEVE TEE-model.png", sizes: ["S", "M", "L"], stock: { S: 6, M: 10, L: 5 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260528, collections: ["Summer Layering"] },
-  { id: 3, name: "VLAD 빈티지 ARCH 링거 티셔츠_2 COLOR", brand: "VOID ARCHIVE", category: "TOP", price: 36000, discount: 8, image: "images/products/VLAD 빈티지 ARCH 링거 티셔츠_2 COLOR.png", hoverImage: "images/products/VLAD 빈티지 ARCH 링거 티셔츠_2 COLOR-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 5, M: 11, L: 8, XL: 3 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260527, collections: ["Minimal Black Edit"] },
-  { id: 4, name: "워셔블 데일리 반팔 니트_8color", brand: "MONO LANE", category: "TOP", price: 49000, discount: 15, image: "images/products/워셔블 데일리 반팔 니트_8color.png", hoverImage: "images/products/워셔블 데일리 반팔 니트_8color-model.png", sizes: ["S", "M", "L"], stock: { S: 7, M: 12, L: 6 }, rating: 4.6, isBest: true, isNew: false, createdAt: 20260520, collections: ["Summer Layering"] },
-  { id: 5, name: "유니버스 페인팅 브러쉬 아트웍 피그먼트 오버핏 반팔 티셔츠 5COLOR", brand: "NOIR MUSE", category: "TOP", price: 45000, discount: 13, image: "images/products/유니버스 페인팅 브러쉬 아트웍 피그먼트 오버핏 반팔 티셔츠 5COLOR.png", hoverImage: "images/products/유니버스 페인팅 브러쉬 아트웍 피그먼트 오버핏 반팔 티셔츠 5COLOR-model.png", sizes: ["M", "L", "XL"], stock: { M: 9, L: 6, XL: 3 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260526, collections: ["Minimal Black Edit"] },
-  { id: 6, name: "사나 레이스 셔링 탑", brand: "LOW CLASSIC", category: "TOP", price: 58000, discount: 11, image: "images/products/사나 레이스 셔링 탑.png", hoverImage: "images/products/사나 레이스 셔링 탑-model.png", sizes: ["S", "M", "L"], stock: { S: 5, M: 7, L: 3 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260523, collections: ["Summer Layering"] },
-  { id: 7, name: "스트라이프 집 트랙탑", brand: "BLACK STUDIO", category: "OUTER", price: 79000, discount: 16, image: "images/products/스트라이프 집 트랙탑.png", hoverImage: "images/products/스트라이프 집 트랙탑-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 3, M: 9, L: 7, XL: 2 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260518, collections: ["Sneaker Utility"] },
-  { id: 8, name: "와플 클래식 트랙탑 - 원더화이트", brand: "STUDIO LOW", category: "OUTER", price: 89000, discount: 14, image: "images/products/와플 클래식 트랙탑 - 원더화이트.png", hoverImage: "images/products/와플 클래식 트랙탑 - 원더화이트-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 4, M: 8, L: 6, XL: 2 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260525, collections: ["Summer Layering"] },
-  { id: 9, name: "울 헤어리 브로드 스트라이프 가디건", brand: "MONO LANE", category: "OUTER", price: 98000, discount: 18, image: "images/products/울 헤어리 브로드 스트라이프 가디건.png", hoverImage: "images/products/울 헤어리 브로드 스트라이프 가디건-model.png", sizes: ["S", "M", "L"], stock: { S: 4, M: 7, L: 4 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260524, collections: ["Minimal Black Edit"] },
-  { id: 10, name: "트윌 재킷-네이비", brand: "VOID ARCHIVE", category: "OUTER", price: 128000, discount: 12, image: "images/products/트윌 재킷-네이비.png", hoverImage: "images/products/트윌 재킷-네이비-model.png", sizes: ["M", "L", "XL"], stock: { M: 5, L: 6, XL: 2 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260516, collections: ["Minimal Black Edit"] },
-  { id: 11, name: "BDU 드로우스트링 릴렉스드 팬츠", brand: "NEAT FIELD", category: "PANTS", price: 76000, discount: 18, image: "images/products/BDU 드로우스트링 릴렉스드 팬츠.png", hoverImage: "images/products/BDU 드로우스트링 릴렉스드 팬츠-model.png", sizes: ["28", "30", "32", "34"], stock: { 28: 4, 30: 8, 32: 6, 34: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260522, collections: ["Sneaker Utility"] },
-  { id: 12, name: "Vintage Scratch Bootcut Jeans", brand: "LOW CLASSIC", category: "PANTS", price: 84000, discount: 10, image: "images/products/Vintage Scratch Bootcut Jeans.png", hoverImage: "images/products/Vintage Scratch Bootcut Jeans-model.png", sizes: ["26", "28", "30", "32"], stock: { 26: 3, 28: 7, 30: 6, 32: 2 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260521, collections: ["Minimal Black Edit"] },
-  { id: 13, name: "스트링 밴딩 빈티지 다크 블루 워싱 포켓 카고 와이드 버뮤다 데님 반바지", brand: "BLACK STUDIO", category: "PANTS", price: 69000, discount: 15, image: "images/products/스트링 밴딩 빈티지 다크 블루 워싱 포켓 카고 와이드 버뮤다 데님 반바지.png", hoverImage: "images/products/스트링 밴딩 빈티지 다크 블루 워싱 포켓 카고 와이드 버뮤다 데님 반바지-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 5, M: 10, L: 7, XL: 2 }, rating: 4.6, isBest: true, isNew: false, createdAt: 20260515, collections: ["Sneaker Utility"] },
-  { id: 14, name: "시티 테크 카고 숏 팬츠", brand: "URBAN EDGE", category: "PANTS", price: 59000, discount: 9, image: "images/products/시티 테크 카고 숏 팬츠.png", hoverImage: "images/products/시티 테크 카고 숏 팬츠-model.png", sizes: ["S", "M", "L"], stock: { S: 6, M: 9, L: 4 }, rating: 4.5, isBest: false, isNew: true, createdAt: 20260519, collections: ["Summer Layering"] },
-  { id: 15, name: "우먼즈 나일론 루치드 롱 스커트", brand: "NOIR MUSE", category: "PANTS", price: 72000, discount: 12, image: "images/products/우먼즈 나일론 루치드 롱 스커트.png", hoverImage: "images/products/우먼즈 나일론 루치드 롱 스커트-model.png", sizes: ["S", "M", "L"], stock: { S: 5, M: 8, L: 3 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260517, collections: ["Summer Layering"] },
-  { id: 16, name: "Flipflop 02", brand: "URBAN EDGE", category: "SHOES", price: 39000, discount: 8, image: "images/products/Flipflop 02.png", hoverImage: "images/products/Flipflop 02-model.png", sizes: ["240", "250", "260", "270", "280"], stock: { 240: 4, 250: 7, 260: 8, 270: 5, 280: 2 }, rating: 4.5, isBest: false, isNew: true, createdAt: 20260514, collections: ["Sneaker Utility"] },
-  { id: 17, name: "성인 바야밴드 클로그 WTN", brand: "URBAN EDGE", category: "SHOES", price: 69000, discount: 7, image: "images/products/성인 바야밴드 클로그 WTN.png", hoverImage: "images/products/성인 바야밴드 클로그 WTN-model.png", sizes: ["240", "250", "260", "270", "280"], stock: { 240: 2, 250: 5, 260: 6, 270: 3, 280: 2 }, rating: 4.4, isBest: false, isNew: false, createdAt: 20260503, collections: ["Sneaker Utility"] },
-  { id: 18, name: "코르테즈 W - 블랙,화이트", brand: "URBAN EDGE", category: "SHOES", price: 109000, discount: 10, image: "images/products/코르테즈 W - 블랙,화이트.png", hoverImage: "images/products/코르테즈 W - 블랙,화이트-model.png", sizes: ["230", "240", "250", "260"], stock: { 230: 3, 240: 6, 250: 4, 260: 2 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260502, collections: ["Sneaker Utility"] },
-  { id: 19, name: "화이트라벨 일렉트론 엘티 30 DARK GRAY", brand: "BLACK STUDIO", category: "BAG", price: 118000, discount: 13, image: "images/products/화이트라벨 일렉트론 엘티 30 DARK GRAY.png", hoverImage: "images/products/화이트라벨 일렉트론 엘티 30 DARK GRAY-model.png", sizes: ["FREE"], stock: { FREE: 8 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260526, collections: ["Minimal Black Edit"] },
-  { id: 20, name: "몽트 LT 백팩", brand: "VOID ARCHIVE", category: "BAG", price: 98000, discount: 10, image: "images/products/몽트 LT 백팩.png", hoverImage: "images/products/몽트 LT 백팩-model.png", sizes: ["FREE"], stock: { FREE: 9 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260513, collections: ["Summer Layering"] },
-  { id: 21, name: "셀리나 리젠나일론 토트 크로스백", brand: "MONO LANE", category: "BAG", price: 86000, discount: 12, image: "images/products/셀리나 리젠나일론 토트 크로스백.png", hoverImage: "images/products/셀리나 리젠나일론 토트 크로스백-model.png", sizes: ["FREE"], stock: { FREE: 11 }, rating: 4.7, isBest: true, isNew: false, createdAt: 20260510, collections: ["Summer Layering"] },
-  { id: 22, name: "2way beads string necklace", brand: "NOIR MUSE", category: "ACC", price: 36000, discount: 5, image: "images/products/2way beads string necklace.png", hoverImage: "images/products/2way beads string necklace-model.png", sizes: ["FREE"], stock: { FREE: 14 }, rating: 4.5, isBest: false, isNew: true, createdAt: 20260512, collections: ["Minimal Black Edit"] },
-  { id: 23, name: "RACING PHENOMENON CAP", brand: "VOID ARCHIVE", category: "ACC", price: 42000, discount: 6, image: "images/products/RACING PHENOMENON CAP.png", hoverImage: "images/products/RACING PHENOMENON CAP-model.png", sizes: ["FREE"], stock: { FREE: 12 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260511, collections: ["Sneaker Utility"] },
-  { id: 24, name: "WAYFARER 선글라스 - 매트 블랙", brand: "NOIR MUSE", category: "ACC", price: 59000, discount: 9, image: "images/products/WAYFARER 선글라스 - 매트 블랙.png", hoverImage: "images/products/WAYFARER 선글라스 - 매트 블랙-model.png", sizes: ["FREE"], stock: { FREE: 10 }, rating: 4.7, isBest: true, isNew: false, createdAt: 20260508, collections: ["Minimal Black Edit"] },
-  { id: 25, name: "프리부르 남성 메탈 워치", brand: "BLACK STUDIO", category: "ACC", price: 149000, discount: 18, image: "images/products/프리부르 남성 메탈 워치.png", hoverImage: "images/products/프리부르 남성 메탈 워치-model.png", sizes: ["FREE"], stock: { FREE: 6 }, rating: 4.8, isBest: true, isNew: false, createdAt: 20260506, collections: ["Minimal Black Edit"] },
-  { id: 26, name: "[가나디] 반팔 티셔츠", brand: "MONO LANE", category: "TOP", price: 39000, discount: 10, image: "images/products/[가나디] 반팔 티셔츠.png", hoverImage: "images/products/[가나디] 반팔 티셔츠-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 6, M: 10, L: 7, XL: 3 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260530, collections: ["Summer Layering"] },
-  { id: 27, name: "AKM Horse Half Top", brand: "NOIR MUSE", category: "TOP", price: 52000, discount: 12, image: "images/products/AKM Horse Half Top.png", hoverImage: "images/products/AKM Horse Half Top-model.png", sizes: ["S", "M", "L"], stock: { S: 5, M: 8, L: 4 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 28, name: "텐셀 린넨 크롭 하프 셔츠", brand: "LOW CLASSIC", category: "TOP", price: 69000, discount: 15, image: "images/products/텐셀 린넨 크롭 하프 셔츠.png", hoverImage: "images/products/텐셀 린넨 크롭 하프 셔츠-model.png", sizes: ["S", "M", "L"], stock: { S: 4, M: 9, L: 5 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260530, collections: ["Summer Layering"] },
-  { id: 29, name: "DGMA PATCHED SEMI BAGGY DENIM PANTS", brand: "BLACK STUDIO", category: "PANTS", price: 96000, discount: 14, image: "images/products/DGMA PATCHED SEMI BAGGY DENIM PANTS.png", hoverImage: "images/products/DGMA PATCHED SEMI BAGGY DENIM PANTS-model.png", sizes: ["28", "30", "32", "34"], stock: { 28: 3, 30: 7, 32: 5, 34: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260530, collections: ["Sneaker Utility"] },
-  { id: 30, name: "VLAD 원턱 커브드 트랙 팬츠_립스탑", brand: "VOID ARCHIVE", category: "PANTS", price: 82000, discount: 11, image: "images/products/VLAD 원턱 커브드 트랙 팬츠_립스탑.png", hoverImage: "images/products/VLAD 원턱 커브드 트랙 팬츠_립스탑-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 4, M: 8, L: 6, XL: 2 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260530, collections: ["Sneaker Utility"] },
-  { id: 31, name: "릴렉스 부츠컷 데님", brand: "NEAT FIELD", category: "PANTS", price: 79000, discount: 10, image: "images/products/릴렉스 부츠컷 데님.png", hoverImage: "images/products/릴렉스 부츠컷 데님-model.png", sizes: ["26", "28", "30", "32"], stock: { 26: 3, 28: 6, 30: 5, 32: 2 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 32, name: "에든 슬랍 세미 와이드 데님 팬츠", brand: "NEAT FIELD", category: "PANTS", price: 86000, discount: 13, image: "images/products/에든 슬랍 세미 와이드 데님 팬츠.png", hoverImage: "images/products/에든 슬랍 세미 와이드 데님 팬츠-model.png", sizes: ["28", "30", "32", "34"], stock: { 28: 4, 30: 7, 32: 4, 34: 2 }, rating: 4.7, isBest: true, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 33, name: "원턱 스웻 하프 팬츠", brand: "STUDIO LOW", category: "PANTS", price: 56000, discount: 9, image: "images/products/원턱 스웻 하프 팬츠.png", hoverImage: "images/products/원턱 스웻 하프 팬츠-model.png", sizes: ["S", "M", "L", "XL"], stock: { S: 5, M: 9, L: 7, XL: 3 }, rating: 4.5, isBest: false, isNew: true, createdAt: 20260530, collections: ["Summer Layering"] },
-  { id: 34, name: "커브드 생지 데님 팬츠", brand: "BLACK STUDIO", category: "PANTS", price: 92000, discount: 12, image: "images/products/커브드 생지 데님 팬츠.png", hoverImage: "images/products/커브드 생지 데님 팬츠-model.png", sizes: ["28", "30", "32", "34"], stock: { 28: 3, 30: 7, 32: 6, 34: 2 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 35, name: "헤링본 코튼 버뮤다 쇼츠", brand: "MONO LANE", category: "PANTS", price: 64000, discount: 10, image: "images/products/헤링본 코튼 버뮤다 쇼츠.png", hoverImage: "images/products/헤링본 코튼 버뮤다 쇼츠-model.png", sizes: ["S", "M", "L"], stock: { S: 5, M: 9, L: 5 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260530, collections: ["Summer Layering"] },
-  { id: 36, name: "뉴발란스 U740", brand: "URBAN EDGE", category: "SHOES", price: 129000, discount: 7, image: "images/products/뉴발란스 U740.png", hoverImage: "images/products/뉴발란스 U740-model.png", sizes: ["240", "250", "260", "270", "280"], stock: { 240: 3, 250: 6, 260: 7, 270: 4, 280: 2 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260530, collections: ["Sneaker Utility"] },
-  { id: 37, name: "우먼즈 나일론 슬라우치 숄더백", brand: "LOW CLASSIC", category: "BAG", price: 78000, discount: 12, image: "images/products/우먼즈 나일론 슬라우치 숄더백.png", hoverImage: "images/products/우먼즈 나일론 슬라우치 숄더백-model.png", sizes: ["FREE"], stock: { FREE: 9 }, rating: 4.7, isBest: false, isNew: true, createdAt: 20260530, collections: ["Summer Layering"] },
-  { id: 38, name: "이클립스 라이트팩", brand: "VOID ARCHIVE", category: "BAG", price: 89000, discount: 11, image: "images/products/이클립스 라이트팩.png", hoverImage: "images/products/이클립스 라이트팩-model.png", sizes: ["FREE"], stock: { FREE: 8 }, rating: 4.8, isBest: true, isNew: true, createdAt: 20260530, collections: ["Sneaker Utility"] },
-  { id: 39, name: "[진격의거인] AOT SURVEY CORPS NECKLACE SILVER", brand: "NOIR MUSE", category: "ACC", price: 49000, discount: 6, image: "images/products/[진격의거인] AOT SURVEY CORPS NECKLACE SILVER.png", hoverImage: "images/products/[진격의거인] AOT SURVEY CORPS NECKLACE SILVER-model.png", sizes: ["FREE"], stock: { FREE: 12 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 40, name: "뉴 LA 볼드 코튼 볼캡", brand: "BLACK STUDIO", category: "ACC", price: 42000, discount: 8, image: "images/products/뉴 LA 볼드 코튼 볼캡.png", hoverImage: "images/products/뉴 LA 볼드 코튼 볼캡-model.png", sizes: ["FREE"], stock: { FREE: 13 }, rating: 4.7, isBest: true, isNew: true, createdAt: 20260530, collections: ["Sneaker Utility"] },
-  { id: 41, name: "테라포마 - TITANIUM - PRIZM BLACK POLARIZED", brand: "NOIR MUSE", category: "ACC", price: 189000, discount: 15, image: "images/products/테라포마 - TITANIUM - PRIZM BLACK POLARIZED.png", hoverImage: "images/products/테라포마 - TITANIUM - PRIZM BLACK POLARIZED-model.png", sizes: ["FREE"], stock: { FREE: 5 }, rating: 4.9, isBest: true, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] },
-  { id: 42, name: "트로이 웨스턴 레더 벨트", brand: "MONO LANE", category: "ACC", price: 54000, discount: 9, image: "images/products/트로이 웨스턴 레더 벨트.png", hoverImage: "images/products/트로이 웨스턴 레더 벨트-model.png", sizes: ["FREE"], stock: { FREE: 10 }, rating: 4.6, isBest: false, isNew: true, createdAt: 20260530, collections: ["Minimal Black Edit"] }
-);
-
+Shop.ready.then(() => {
+"use strict";
+const baseProducts = Shop.clone(Shop.seed);
+const e = Shop.escape;
 const brandStories = [
   { name: "MONO LANE", title: "Quiet Essential", image: "images/products/워셔블 데일리 반팔 니트_8color-model.png", copy: "일상에서 가장 자주 입는 기본 아이템을 간결한 실루엣으로 제안합니다." },
   { name: "STUDIO LOW", title: "Soft Utility", image: "images/products/와플 클래식 트랙탑 - 원더화이트-model.png", copy: "편안한 소재와 낮은 채도의 컬러로 오래 입는 데일리웨어를 만듭니다." },
@@ -52,11 +9,7 @@ const brandStories = [
   { name: "NEAT FIELD", title: "Tailored Casual", image: "images/products/BDU 드로우스트링 릴렉스드 팬츠-model.png", copy: "팬츠와 셋업 중심의 단정한 캐주얼을 큐레이션합니다." }
 ];
 
-const defaultReviews = {
-  1: [{ user: "min***", rating: 5, text: "핏이 여유롭고 소재가 가벼워서 계절 넘어갈 때 입기 좋습니다." }],
-  3: [{ user: "jay***", rating: 5, text: "슬랙스 실루엣이 깔끔하고 신발 매치가 쉽습니다." }],
-  9: [{ user: "seo***", rating: 5, text: "사진보다 실물이 더 트렌디하고 착화감도 안정적입니다." }]
-};
+const defaultReviews = {};
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -65,35 +18,13 @@ const orderStatuses = ["결제완료", "배송준비", "배송중", "배송완�
 const categories = ["ALL", "OUTER", "TOP", "PANTS", "SHOES", "BAG", "ACC"];
 let toastTimer;
 
-function readStorage(key, fallback) {
-  try {
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
+const readStorage = Shop.read;
 function save(key, value) {
-  localStorage.setItem(key, JSON.stringify(value));
+  if (!Shop.save(key, value)) throw new Error("Storage unavailable");
 }
 
-function withStock(product) {
-  const base = baseProducts.find((item) => item.id === product.id) || {};
-  const sizes = product.sizes || base.sizes || ["FREE"];
-  const stock = product.stock || {};
-  sizes.forEach((size, index) => {
-    if (stock[size] === undefined) stock[size] = Math.max(1, 8 - index * 2);
-  });
-  return { ...base, ...product, sizes, stock, collections: product.collections || base.collections || [] };
-}
-
-let products = readStorage("blackFitProducts", null);
-if (!Array.isArray(products) || products.length < baseProducts.length || products.some((product) => String(product.name || "").includes("?"))) {
-  products = [...baseProducts];
-  save("blackFitProducts", products);
-}
-products = products.map(withStock);
+const withStock = Shop.normalizeProduct;
+let products = Shop.products();
 
 const state = {
   category: "ALL",
@@ -105,13 +36,13 @@ const state = {
   brand: "",
   collection: "",
   coupon: readStorage("blackFitCoupon", null),
-  recentSearches: readStorage("blackFitRecentSearches", []),
-  wishes: new Set(readStorage("blackFitWishes", [])),
-  cart: readStorage("blackFitCart", []),
-  recent: readStorage("blackFitRecent", []),
-  orders: readStorage("blackFitOrders", []),
-  reviews: readStorage("blackFitReviews", defaultReviews),
-  user: readStorage("blackFitUser", null),
+  recentSearches: (() => { const items = readStorage("blackFitRecentSearches", []); return Array.isArray(items) ? items.filter((item) => typeof item === "string").slice(0, 8) : []; })(),
+  wishes: new Set(Shop.ids("blackFitWishes")),
+  cart: Shop.cart(products),
+  recent: Shop.ids("blackFitRecent"),
+  orders: Shop.orders(),
+  reviews: (() => { const reviews = readStorage("blackFitReviews", defaultReviews); return reviews && typeof reviews === "object" && !Array.isArray(reviews) ? reviews : {}; })(),
+  user: (() => { const user = readStorage("blackFitUser", null); return user && typeof user.id === "string" ? { id: user.id.slice(0, 80), role: user.role === "admin" ? "admin" : "member" } : null; })(),
   activeProduct: null,
   selectedSize: "",
   selectedQty: 1
@@ -210,7 +141,8 @@ function showToast(message) {
 }
 
 function productReviews(productId) {
-  return state.reviews[productId] || [];
+  const reviews = state.reviews[productId];
+  return Array.isArray(reviews) ? reviews.filter((review) => review && typeof review.text === "string" && typeof review.user === "string" && Number.isInteger(review.rating) && review.rating >= 1 && review.rating <= 5).slice(0, 100) : [];
 }
 
 function averageRating(product) {
@@ -221,51 +153,35 @@ function averageRating(product) {
 }
 
 function productColors(product) {
-  if (Array.isArray(product.colors) && product.colors.length) return product.colors;
-  const palettes = {
-    OUTER: ["#111111", "#77716b", "#e8e2d8"],
-    TOP: ["#ffffff", "#111111", "#bfc4c9"],
-    PANTS: ["#111111", "#d7d1c8", "#5d6470"],
-    SHOES: ["#f7f7f7", "#111111", "#8f969c"],
-    BAG: ["#111111", "#c8b79f", "#ece8df"],
-    ACC: ["#111111", "#d9d9d9", "#2d6bff"]
-  };
-  return palettes[product.category] || ["#111111", "#ffffff", "#999999"];
+  return product.colors || [];
 }
 
 function productCardOptions(product) {
   const colors = productColors(product).map((color) => `<i style="--swatch:${color}" aria-hidden="true"></i>`).join("");
-  const sizes = product.sizes.slice(0, 4).map((size) => `<span>${size}</span>`).join("");
+  const sizes = product.sizes.slice(0, 4).map((size) => `<span>${e(size)}</span>`).join("");
   return `<div class="card-options"><div class="color-swatches">${colors}</div><div class="size-preview">${sizes}</div></div>`;
 }
 
 function productSpecGrid(product) {
-  return `
-    <div class="spec-grid">
-      <div><span>FIT</span><strong>${product.category === "PANTS" ? "Straight" : product.category === "OUTER" ? "Relaxed" : "Regular"}</strong></div>
-      <div><span>FABRIC</span><strong>${product.category === "SHOES" ? "Leather Mix" : "Cotton Blend"}</strong></div>
-      <div><span>CARE</span><strong>Dry Clean</strong></div>
-      <div><span>MODEL</span><strong>178cm / M</strong></div>
-    </div>
-  `;
+  return '<div class="spec-grid"><div><span>OPTIONS</span><strong>' + e(product.sizes.join(" / ")) + '</strong></div><div><span>DELIVERY</span><strong>5만원 이상 무료배송</strong></div></div>';
 }
 
 function productCard(product, rank = "") {
   const wished = state.wishes.has(product.id);
   return `
-    <article class="product-card" data-id="${product.id}">
+    <article class="product-card ${product.hoverImage ? "has-hover" : ""}" data-id="${product.id}">
       <button class="product-image" type="button" data-open-product="${product.id}">
         ${rank ? `<span class="rank-badge">${rank}</span>` : ""}
         ${product.isNew ? `<span class="label-badge">NEW</span>` : ""}
-        <img class="product-main-img" src="${product.image}" alt="${product.brand} ${product.name}" loading="lazy">
-        ${product.hoverImage ? `<img class="product-hover-img" src="${product.hoverImage}" alt="${product.name} 모델 착용 이미지" loading="lazy">` : ""}
+        <img class="product-main-img" src="${e(Shop.imageUrl(product.image))}" alt="${e(product.brand)} ${e(product.name)}" loading="lazy">
+        ${product.hoverImage ? `<img class="product-hover-img" src="${e(Shop.imageUrl(product.hoverImage))}" alt="${e(product.name)} 모델 착용 이미지" loading="lazy">` : ""}
         <span class="quick-view">Quick View</span>
       </button>
-      <button class="wish-button ${wished ? "active" : ""}" type="button" data-wish="${product.id}" aria-label="찜하기">${wished ? "♥" : "♡"}</button>
+      <button class="wish-button ${wished ? "active" : ""}" type="button" data-wish="${product.id}" aria-label="${wished ? "찜 해제" : "찜하기"}" title="${wished ? "찜 해제" : "찜하기"}" aria-pressed="${wished}"><i data-lucide="heart" aria-hidden="true">${wished ? "♥" : "♡"}</i></button>
       <button class="product-info" type="button" data-open-product="${product.id}">
-        <span class="category-name">${product.category}</span>
-        <p class="brand-name">${product.brand}</p>
-        <h3 class="product-name">${product.name}</h3>
+        <span class="category-name">${e(product.category)}</span>
+        <p class="brand-name">${e(product.brand)}</p>
+        <h3 class="product-name">${e(product.name)}</h3>
         <div class="price-row"><span class="discount">${product.discount}%</span><span>${formatPrice(getSalePrice(product))}</span></div>
         <div class="card-meta"><span>★ ${averageRating(product).toFixed(1)}</span><span>${stockText(product)}</span></div>
         ${productCardOptions(product)}
@@ -278,15 +194,17 @@ function renderHome() {
   els.rankingGrid.innerHTML = [...products].sort((a, b) => averageRating(b) - averageRating(a)).slice(0, 8).map((p, i) => productCard(p, String(i + 1).padStart(2, "0"))).join("");
   els.newProducts.innerHTML = products.filter((p) => p.isNew).sort((a, b) => b.createdAt - a.createdAt).slice(0, 4).map((p) => productCard(p)).join("");
   renderBrands();
+  $("#heroItemCount").textContent = products.length;
+  $("#heroNewCount").textContent = products.filter((item) => item.isNew).length;
 }
 
 function renderBrands() {
   els.brandCards.innerHTML = brandStories.map((brand) => {
     const count = products.filter((product) => product.brand === brand.name).length;
     return `
-      <article class="brand-card" data-brand-filter="${brand.name}">
-        <img src="${brand.image}" alt="${brand.name}">
-        <div><span>${count} items</span><h3>${brand.name}</h3><strong>${brand.title}</strong><p>${brand.copy}</p></div>
+      <article class="brand-card" data-brand-filter="${e(brand.name)}">
+        <img src="${e(Shop.imageUrl(brand.image))}" alt="${e(brand.name)}">
+        <div><span>${count} items</span><h3>${e(brand.name)}</h3><strong>${e(brand.title)}</strong><p>${e(brand.copy)}</p></div>
       </article>
     `;
   }).join("");
@@ -336,6 +254,14 @@ function renderProducts() {
   renderFilters();
   els.bestFilter.dataset.active = String(state.bestOnly);
   els.newFilter.dataset.active = String(state.newOnly);
+  const active = [state.category !== "ALL" ? state.category : "", state.brand, state.collection,
+    state.bestOnly ? "BEST" : "", state.newOnly ? "NEW" : "", state.price !== "all" ? els.priceSelect.selectedOptions[0].textContent : "",
+    state.search ? `검색: ${state.search}` : ""].filter(Boolean);
+  $("#resultCount").textContent = `${list.length}개 상품`;
+  $("#activeFilters").textContent = active.join(" · ");
+  $("#filterReset").hidden = !active.length;
+  Shop.icons();
+
 }
 
 function renderSearchAssist() {
@@ -356,9 +282,9 @@ function renderSearchAssist() {
 
   els.searchAssist.hidden = false;
   els.searchAssist.innerHTML = `
-    ${recent.length ? `<div class="assist-block"><div class="assist-title"><span>최근 검색어</span><button type="button" data-search-clear>전체 삭제</button></div>${recent.map((item) => `<div class="assist-row"><button type="button" data-search-pick="${item}">${item}</button><button class="assist-remove" type="button" data-search-remove="${item}" aria-label="${item} 삭제">×</button></div>`).join("")}</div>` : ""}
-    ${brands.length ? `<div class="assist-block"><span>브랜드 추천</span>${brands.map((brand) => `<button type="button" data-search-pick="${brand}">${brand}</button>`).join("")}</div>` : ""}
-    ${productMatches.length ? `<div class="assist-block"><span>상품 추천</span>${productMatches.map((product) => `<button type="button" data-search-pick="${product.name}"><strong>${product.brand}</strong>${product.name}</button>`).join("")}</div>` : ""}
+    ${recent.length ? `<div class="assist-block"><div class="assist-title"><span>최근 검색어</span><button type="button" data-search-clear>전체 삭제</button></div>${recent.map((item) => `<div class="assist-row"><button type="button" data-search-pick="${e(item)}">${e(item)}</button><button class="assist-remove" type="button" data-search-remove="${e(item)}" aria-label="${e(item)} 삭제">×</button></div>`).join("")}</div>` : ""}
+    ${brands.length ? `<div class="assist-block"><span>브랜드 추천</span>${brands.map((brand) => `<button type="button" data-search-pick="${e(brand)}">${e(brand)}</button>`).join("")}</div>` : ""}
+    ${productMatches.length ? `<div class="assist-block"><span>상품 추천</span>${productMatches.map((product) => `<button type="button" data-search-pick="${e(product.name)}"><strong>${e(product.brand)}</strong>${e(product.name)}</button>`).join("")}</div>` : ""}
   `;
 }
 
@@ -389,8 +315,8 @@ function renderWishlist() {
   }
   els.wishlistList.innerHTML = list.map((p) => `
     <article class="wishlist-item">
-      <img src="${p.image}" alt="${p.name}">
-      <div><strong>${p.name}</strong><p>${p.brand} · ${formatPrice(getSalePrice(p))}</p><button data-open-product="${p.id}" type="button">보기</button></div>
+      <img src="${e(Shop.imageUrl(p.image))}" alt="${e(p.name)}">
+      <div><strong>${e(p.name)}</strong><p>${e(p.brand)} · ${formatPrice(getSalePrice(p))}</p><button data-open-product="${p.id}" type="button">보기</button></div>
       <button data-remove-wish="${p.id}" type="button">삭제</button>
     </article>
   `).join("");
@@ -407,19 +333,21 @@ function couponDiscount(subtotal) {
 function cartTotal() {
   const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const coupon = couponDiscount(subtotal);
-  const shipping = subtotal && !coupon.shippingFree ? deliveryFee : 0;
+  const shipping = subtotal && subtotal < 50000 && !coupon.shippingFree ? deliveryFee : 0;
   return { subtotal, discount: coupon.discount, shipping, total: Math.max(0, subtotal - coupon.discount + shipping), coupon };
 }
 
 function getCartStock(item) {
   const product = products.find((p) => p.id === item.id);
-  return product?.stock?.[item.size] ?? 99;
+  return product?.stock?.[item.size] ?? 0;
 }
 
 function renderCart() {
   const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
   const { subtotal, discount, shipping, total, coupon } = cartTotal();
   els.cartCount.textContent = count;
+  els.checkoutOpen.disabled = !state.cart.length;
+  $("#shippingHint").textContent = !subtotal ? "" : shipping ? `${formatPrice(50000 - subtotal)} 더 담으면 무료배송` : "무료배송이 적용되었습니다.";
   els.subtotalPrice.textContent = formatPrice(subtotal);
   els.discountPrice.textContent = discount ? `-${formatPrice(discount)}` : "0원";
   els.shippingPrice.textContent = formatPrice(shipping);
@@ -433,11 +361,11 @@ function renderCart() {
   }
   els.cartList.innerHTML = state.cart.map((item) => `
     <article class="cart-item">
-      <img src="${item.image}" alt="${item.name}">
-      <div><strong>${item.name}</strong><p>Size ${item.size} · 재고 ${getCartStock(item)}개</p><b>${formatPrice(item.price * item.quantity)}</b>
-        <div class="cart-controls"><button class="qty-button" data-cart-qty="minus" data-key="${item.key}">-</button><span>${item.quantity}</span><button class="qty-button" data-cart-qty="plus" data-key="${item.key}">+</button></div>
+      <img src="${e(Shop.imageUrl(item.image))}" alt="${e(item.name)}">
+      <div><strong>${e(item.name)}</strong><label class="cart-option">옵션<select data-cart-size="${e(item.key)}" aria-label="${e(item.name)} 옵션">${(products.find((product) => product.id === item.id)?.sizes || []).map((size) => `<option value="${e(size)}" ${size === item.size ? "selected" : ""} ${(products.find((product) => product.id === item.id)?.stock[size] || 0) < item.quantity && size !== item.size ? "disabled" : ""}>${e(size)}</option>`).join("")}</select></label><p>재고 ${getCartStock(item)}개</p><b>${formatPrice(item.price * item.quantity)}</b>
+        <div class="cart-controls"><button class="qty-button" data-cart-qty="minus" data-key="${e(item.key)}">-</button><span>${item.quantity}</span><button class="qty-button" data-cart-qty="plus" data-key="${e(item.key)}">+</button></div>
       </div>
-      <button class="remove-button" data-remove="${item.key}">삭제</button>
+      <button class="remove-button" data-remove="${e(item.key)}">삭제</button>
     </article>
   `).join("");
   renderCartRecommendations();
@@ -460,8 +388,8 @@ function renderCartRecommendations() {
     <div class="recommend-list">
       ${list.map((product) => `
         <button class="recommend-item" type="button" data-open-product="${product.id}">
-          <img src="${product.image}" alt="${product.name}">
-          <span><strong>${product.name}</strong><em>${product.brand} · ${formatPrice(getSalePrice(product))}</em></span>
+          <img src="${e(Shop.imageUrl(product.image))}" alt="${e(product.name)}">
+          <span><strong>${e(product.name)}</strong><em>${e(product.brand)} · ${formatPrice(getSalePrice(product))}</em></span>
         </button>
       `).join("")}
     </div>
@@ -482,22 +410,24 @@ function renderMyPage() {
   const recentCount = state.recent.length;
   const orderMarkup = state.orders.length ? state.orders.map((order) => `
     <article class="order-card">
-      <div class="order-top"><strong>${order.orderNumber}</strong><span>${order.status || "결제완료"}</span></div>
+      <div class="order-top"><strong>${e(order.orderNumber)}</strong><span>${e(order.status || "결제완료")}</span></div>
       ${timelineMarkup(order.status)}
-      <p>${order.createdAt || "-"} · ${order.items.length}개 상품</p>
-      <ul>${order.items.slice(0, 3).map((item) => `<li>${item.name} / ${item.size} / ${item.quantity}개</li>`).join("")}</ul>
+      <p>${e(order.createdAt || "-")} · ${order.items.length}개 상품</p>
+      <ul>${order.items.slice(0, 3).map((item) => `<li>${e(item.name)} / ${e(item.size)} / ${e(item.quantity)}개</li>`).join("")}</ul>
       <b>${formatPrice(order.total)}</b>
-      <button class="ghost-btn full" type="button" data-order-detail="${order.orderNumber}">주문 상세 보기</button>
+      <button class="ghost-btn full" type="button" data-order-detail="${e(order.orderNumber)}">주문 상세 보기</button>
     </article>
   `).join("") : `<div class="cart-empty"><div><strong>아직 주문 내역이 없습니다.</strong><p>체크아웃을 완료하면 이곳에 주문이 쌓입니다.</p></div></div>`;
 
   els.mypageList.innerHTML = `
     <section class="member-card">
       <span>Signed in as</span>
-      <strong>${state.user.id}</strong>
+      <strong>${e(state.user.id)}</strong>
       <p>${state.user.role === "admin" ? "관리자 계정" : "일반 회원"} · 누적 주문 ${state.orders.length}건</p>
+      <div class="member-actions"><button class="ghost-btn" type="button" data-member-logout>로그아웃</button>${state.user.role === "admin" ? '<button class="primary-btn" type="button" data-member-admin>상품 관리</button>' : ""}</div>
     </section>
-    <div class="member-metrics"><div><strong>${wishCount}</strong><span>Wishlist</span></div><div><strong>${recentCount}</strong><span>Viewed</span></div><div><strong>2</strong><span>Coupons</span></div></div>
+    <div class="member-metrics"><div><strong>${wishCount}</strong><span>Wishlist</span></div><div><strong>${recentCount}</strong><span>Viewed</span></div><div><strong>3</strong><span>Coupons</span></div></div>
+    <p class="guide">이 브라우저에 저장된 모의 주문입니다. 실제 결제·배송은 진행되지 않습니다.</p>
     <div class="panel-subtitle">Order History</div>
     ${orderMarkup}
   `;
@@ -508,12 +438,14 @@ function renderOrderDetail(orderNumber) {
   if (!order) return;
   els.orderDetail.innerHTML = `
     <article class="order-detail-card">
-      <span>${order.createdAt || "-"}</span>
-      <h3>${order.orderNumber}</h3>
+      <span>${e(order.createdAt || "-")}</span>
+      <h3>${e(order.orderNumber)}</h3>
       ${timelineMarkup(order.status)}
       <div class="panel-subtitle">Items</div>
-      ${order.items.map((item) => `<div class="order-line"><img src="${item.image}" alt="${item.name}"><div><strong>${item.name}</strong><p>Size ${item.size} · ${item.quantity}개</p></div><b>${formatPrice(item.price * item.quantity)}</b></div>`).join("")}
-      <div class="summary-lite"><span>결제 금액</span><strong>${formatPrice(order.total)}</strong></div>
+      ${order.items.map((item) => `<div class="order-line"><img src="${e(Shop.imageUrl(item.image))}" alt="${e(item.name)}"><div><strong>${e(item.name)}</strong><p>Size ${e(item.size)} · ${e(item.quantity)}개</p></div><b>${formatPrice(item.price * item.quantity)}</b></div>`).join("")}
+      <div class="summary-lite"><span>결제 예정 금액</span><strong>${formatPrice(order.total)}</strong></div>
+      ${order.customer ? `<div class="delivery-detail"><strong>배송 정보</strong><p>${e(order.customer.name)} · ${e(order.customer.phone)}</p><p>${e(order.customer.address)}</p><p>${e(order.memo || "")}</p></div>` : ""}
+      <p class="guide">모의 주문입니다. 실제 결제 및 배송은 진행되지 않습니다.</p>
     </article>
   `;
   openLayer("order");
@@ -527,20 +459,25 @@ function renderAdminOrders() {
   els.adminOrderList.innerHTML = state.orders.map((order) => `
     <article class="admin-order-item">
       <div>
-        <strong>${order.orderNumber}</strong>
-        <p>${order.createdAt || "-"} · ${order.items.length}개 · ${formatPrice(order.total)}</p>
+        <strong>${e(order.orderNumber)}</strong>
+        <p>${e(order.createdAt || "-")} · ${order.items.length}개 · ${formatPrice(order.total)}</p>
       </div>
-      <select data-order-status="${order.orderNumber}">
+      <select data-order-status="${e(order.orderNumber)}">
         ${orderStatuses.map((status) => `<option value="${status}" ${status === (order.status || "결제완료") ? "selected" : ""}>${status}</option>`).join("")}
       </select>
-      <button class="order-delete-btn" type="button" data-order-delete="${order.orderNumber}">삭제</button>
+      <button class="order-delete-btn" type="button" data-order-delete="${e(order.orderNumber)}">삭제</button>
     </article>
   `).join("");
 }
 
+let activeLayer = null;
+let layerTrigger = null;
 function openLayer(type) {
   els.overlay.hidden = false;
   document.body.classList.add("lock");
+  const previous = activeLayer;
+  document.querySelectorAll(".dialog, .side-panel").forEach((layer) => { layer.classList.remove("open"); layer.inert = true; });
+  if (!previous) layerTrigger = document.activeElement;
   if (type === "modal") els.modal.classList.add("open");
   if (type === "cart") els.cartPanel.classList.add("open");
   if (type === "wish") els.wishlistPanel.classList.add("open");
@@ -555,21 +492,33 @@ function openLayer(type) {
     els.adminPanel.classList.add("open");
   }
   if (type === "checkout") els.checkoutModal.classList.add("open");
+  activeLayer = document.querySelector(".dialog.open, .side-panel.open");
+  activeLayer.inert = false;
+  document.querySelector("main").inert = true;
+  document.querySelector("header").inert = true;
+  document.querySelector("footer").inert = true;
+  els.backTop.inert = true;
+  els.bottomNav.inert = true;
+  requestAnimationFrame(() => activeLayer?.querySelector("button, input, select, a[href]")?.focus());
+  Shop.icons();
 }
 
 function closeLayers() {
-  [els.modal, els.cartPanel, els.wishlistPanel, els.mypagePanel, els.orderPanel, els.authModal, els.adminPanel, els.checkoutModal].forEach((el) => el.classList.remove("open"));
+  [els.modal, els.cartPanel, els.wishlistPanel, els.mypagePanel, els.orderPanel, els.authModal, els.adminPanel, els.checkoutModal].forEach((el) => { el.classList.remove("open"); el.inert = true; });
   resetLoginForm();
   els.overlay.hidden = true;
   document.body.classList.remove("lock");
+  document.querySelector("main").inert = false;
+  document.querySelector("header").inert = false;
+  document.querySelector("footer").inert = false;
+  els.backTop.inert = false;
+  els.bottomNav.inert = false;
+  activeLayer = null;
+  layerTrigger?.focus();
 }
 
 function gallery(product) {
-  const relatedImages = products
-    .filter((item) => item.category === product.category && item.id !== product.id)
-    .flatMap((item) => [item.image, item.hoverImage])
-    .filter(Boolean);
-  return [...new Set([product.image, product.hoverImage, ...relatedImages])].slice(0, 3);
+  return [...new Set([product.image, product.hoverImage].filter(Boolean))];
 }
 
 function reviewListMarkup(product) {
@@ -577,8 +526,8 @@ function reviewListMarkup(product) {
   if (!reviews.length) return `<div class="empty-mini">아직 작성된 리뷰가 없습니다.</div>`;
   return reviews.map((review) => `
     <article class="review-item">
-      <div><strong>${review.user}</strong><span>${"★".repeat(Number(review.rating))}${"☆".repeat(5 - Number(review.rating))}</span></div>
-      <p>${review.text}</p>
+      <div><strong>${e(review.user)}</strong><span>${"★".repeat(Number(review.rating))}${"☆".repeat(5 - Number(review.rating))}</span></div>
+      <p>${e(review.text)}</p>
     </article>
   `).join("");
 }
@@ -586,8 +535,8 @@ function reviewListMarkup(product) {
 function productTabMarkup(product, tab = "detail") {
   const contents = {
     detail: `<div class="tab-panel"><strong>상품 설명</strong><p>도시적인 무드에 맞춘 BLACK FIT 큐레이션 아이템입니다. 군더더기 없는 실루엣과 실용적인 소재로 데일리 스타일에 자연스럽게 어울립니다.</p></div>`,
-    size: `<div class="tab-panel"><strong>사이즈 가이드</strong><p>상세 실측은 브랜드 기준에 따라 1~2cm 차이가 있을 수 있습니다. 여유로운 핏을 원하면 한 사이즈 업을 추천합니다.</p><div class="size-table">${product.sizes.map((size) => `<span>${size}</span>`).join("")}</div></div>`,
-    review: `<div class="tab-panel"><strong>리뷰 ${productReviews(product.id).length}개</strong>${reviewListMarkup(product)}<form class="review-form" data-review-form="${product.id}"><select name="rating"><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option></select><input name="text" placeholder="리뷰를 입력하세요" required><button class="primary-btn" type="submit">작성</button></form></div>`,
+    size: `<div class="tab-panel"><strong>사이즈 가이드</strong><p>선택 가능한 옵션입니다. 이 데모에는 상품별 실측 데이터가 등록되어 있지 않습니다.</p><div class="size-table">${product.sizes.map((size) => `<span>${e(size)}</span>`).join("")}</div></div>`,
+    review: `<div class="tab-panel"><strong>리뷰 ${productReviews(product.id).length}개</strong>${reviewListMarkup(product)}<form class="review-form" data-review-form="${product.id}"><select name="rating"><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option></select><input name="text" placeholder="리뷰를 입력하세요" maxlength="1000" required><button class="primary-btn" type="submit">작성</button></form></div>`,
     delivery: `<div class="tab-panel"><strong>배송/교환 안내</strong><p>기본 배송비는 3,000원이며 5만원 이상 무료 배송입니다. 수령 후 7일 이내 교환 및 반품 신청이 가능합니다.</p></div>`
   };
   return `
@@ -614,12 +563,12 @@ function openProduct(id) {
   const images = gallery(product);
   els.modalBody.innerHTML = `
     <div>
-      <div class="modal-image"><img id="modalMainImage" src="${images[0]}" alt="${product.name}"></div>
-      <div class="modal-thumbs">${images.map((image, i) => `<button class="${i === 0 ? "active" : ""}" data-gallery-image="${image}"><img src="${image}" alt=""></button>`).join("")}</div>
+      <div class="modal-image"><img id="modalMainImage" src="${e(Shop.imageUrl(images[0]))}" alt="${e(product.name)}"></div>
+      <div class="modal-thumbs">${images.map((image, i) => `<button class="${i === 0 ? "active" : ""}" data-gallery-image="${e(Shop.imageUrl(image))}"><img src="${e(Shop.imageUrl(image))}" alt=""></button>`).join("")}</div>
     </div>
     <div class="modal-detail">
-      <p class="brand-name">${product.brand}</p>
-      <h2>${product.name}</h2>
+      <p class="brand-name">${e(product.brand)}</p>
+      <h2>${e(product.name)}</h2>
       <div class="rating">★ ${averageRating(product).toFixed(1)} · 리뷰 ${productReviews(product.id).length}개 · ${stockText(product)}</div>
       <div class="modal-price"><span class="discount">${product.discount}%</span> <strong>${formatPrice(getSalePrice(product))}</strong></div>
       ${productSpecGrid(product)}
@@ -628,7 +577,7 @@ function openProduct(id) {
         <div class="size-options">
           ${product.sizes.map((size) => {
             const left = Number(product.stock?.[size] || 0);
-            return `<button class="size-button" data-size="${size}" data-left="${left}" ${left <= 0 ? "disabled" : ""}>${size}<small>${left <= 0 ? "품절" : `${left}개`}</small></button>`;
+            return `<button class="size-button" data-size="${e(size)}" data-left="${left}" ${left <= 0 ? "disabled" : ""}>${e(size)}<small>${left <= 0 ? "품절" : `${left}개`}</small></button>`;
           }).join("")}
         </div>
         <p><strong>Quantity</strong></p>
@@ -643,17 +592,11 @@ function openProduct(id) {
 }
 
 function addToCart(product, size, quantity) {
-  const stock = Number(product.stock?.[size] || 0);
-  if (!stock) return showToast("선택한 사이즈는 품절입니다.");
-  const key = `${product.id}-${size}`;
-  const found = state.cart.find((item) => item.key === key);
-  const currentQty = found ? found.quantity : 0;
-  if (currentQty + quantity > stock) return showToast(`재고는 ${stock}개까지 담을 수 있습니다.`);
-  if (found) found.quantity += quantity;
-  else state.cart.push({ key, id: product.id, name: product.name, brand: product.brand, image: product.image, price: getSalePrice(product), size, quantity });
-  save("blackFitCart", state.cart);
+  const error = Shop.add(product.id, size, quantity);
+  state.cart = Shop.cart();
   renderCart();
-  showToast("장바구니에 상품을 담았습니다.");
+  showToast(error || "장바구니에 상품을 담았습니다.");
+  return !error;
 }
 
 function renderLogin() {
@@ -670,8 +613,8 @@ function renderAdmin() {
   els.adminCount.textContent = `${products.length}개 상품`;
   els.adminList.innerHTML = products.map((p) => `
     <article class="admin-item">
-      <img src="${p.image}" alt="${p.name}">
-      <div><strong>${p.name}</strong><p>${p.brand} · ${p.category} · ${formatPrice(getSalePrice(p))} · 재고 ${totalStock(p)}개</p></div>
+      <img src="${e(Shop.imageUrl(p.image))}" alt="${e(p.name)}">
+      <div><strong>${e(p.name)}</strong><p>${e(p.brand)} · ${e(p.category)} · ${formatPrice(getSalePrice(p))} · 재고 ${totalStock(p)}개</p></div>
       <button data-admin-edit="${p.id}">수정</button>
       <button data-admin-delete="${p.id}">삭제</button>
     </article>
@@ -680,15 +623,15 @@ function renderAdmin() {
 }
 
 function stockToInput(stock = {}) {
-  return Object.entries(stock).map(([size, count]) => `${size}:${count}`).join(",");
+  return Object.entries(stock).map(([size, count]) => `${e(size)}:${count}`).join(",");
 }
 
 function parseStock(value, sizes) {
   const entries = value.split(",").map((item) => item.trim()).filter(Boolean);
-  const stock = {};
+  const stock = Object.create(null);
   entries.forEach((entry) => {
     const [size, count] = entry.split(":").map((part) => part.trim());
-    if (size) stock[size] = Math.max(0, Number(count || 0));
+    if (size) stock[size] = Number(count || 0);
   });
   sizes.forEach((size) => {
     if (stock[size] === undefined) stock[size] = 5;
@@ -715,6 +658,7 @@ function fillAdmin(product) {
   $("#adminPrice").value = product.price;
   $("#adminDiscount").value = product.discount;
   $("#adminImage").value = product.image;
+  $("#adminHoverImage").value = product.hoverImage || "";
   $("#adminSizes").value = product.sizes.join(",");
   $("#adminStock").value = stockToInput(product.stock);
   $("#adminBest").checked = product.isBest;
@@ -722,7 +666,8 @@ function fillAdmin(product) {
 }
 
 function refresh() {
-  products = products.map(withStock);
+  products = products.map(withStock).filter(Boolean);
+  state.cart = Shop.cart(products);
   renderHome();
   renderProducts();
   renderCart();
@@ -790,6 +735,13 @@ function bind() {
   });
   els.bestFilter.addEventListener("click", () => { resetCollectionFilters(); state.bestOnly = !state.bestOnly; renderProducts(); });
   els.newFilter.addEventListener("click", () => { resetCollectionFilters(); state.newOnly = !state.newOnly; renderProducts(); });
+  $("#filterReset").addEventListener("click", () => {
+    Object.assign(state, { category: "ALL", bestOnly: false, newOnly: false, search: "", price: "all", brand: "", collection: "" });
+    els.searchInput.value = "";
+    els.priceSelect.value = "all";
+    els.searchAssist.hidden = true;
+    renderProducts();
+  });
   els.sortSelect.addEventListener("change", (event) => { state.sort = event.target.value; renderProducts(); });
   els.priceSelect.addEventListener("change", (event) => { state.price = event.target.value; renderProducts(); });
   els.searchInput.addEventListener("input", (event) => {
@@ -829,6 +781,8 @@ function bind() {
     els.searchAssist.hidden = true;
   });
   document.body.addEventListener("click", (event) => {
+    if (event.target.closest("[data-member-logout]")) { els.loginOpen.click(); closeLayers(); return; }
+    if (event.target.closest("[data-member-admin]")) { openLayer("admin"); return; }
     const open = event.target.closest("[data-open-product]");
     const wish = event.target.closest("[data-wish]");
     const auth = event.target.closest("[data-open-auth]");
@@ -892,10 +846,10 @@ function bind() {
         $("#modalNotice").textContent = "사이즈를 선택해주세요.";
         return;
       }
-      addToCart(state.activeProduct, state.selectedSize, state.selectedQty);
+      if (!addToCart(state.activeProduct, state.selectedSize, state.selectedQty)) return;
       if (event.target.closest("#buyButton")) {
         closeLayers();
-        openLayer("cart");
+        els.checkoutOpen.click();
       }
     }
   });
@@ -907,13 +861,32 @@ function bind() {
     const productId = Number(form.dataset.reviewForm);
     const data = new FormData(form);
     const review = { user: state.user.id, rating: Number(data.get("rating")), text: data.get("text").trim() };
-    if (!review.text) return;
-    state.reviews[productId] = [review, ...(state.reviews[productId] || [])];
+    if (!review.text || review.text.length > 1000 || !Number.isInteger(review.rating) || review.rating < 1 || review.rating > 5) return showToast("리뷰 내용과 별점을 확인해주세요.");
+    state.reviews[productId] = [review, ...productReviews(productId)].slice(0, 100);
     save("blackFitReviews", state.reviews);
     renderProductTabs("review");
     renderProducts();
     renderHome();
+    Shop.icons();
     showToast("리뷰가 등록되었습니다.");
+  });
+  els.cartList.addEventListener("change", (event) => {
+    const select = event.target.closest("[data-cart-size]");
+    if (!select) return;
+    products = Shop.products();
+    state.cart = Shop.cart(products);
+    const item = state.cart.find((entry) => entry.key === select.dataset.cartSize);
+    if (!item) return renderCart();
+    const product = products.find((entry) => entry.id === item.id);
+    const existing = state.cart.find((entry) => entry.id === item.id && entry.size === select.value && entry.key !== item.key);
+    if (!product.sizes.includes(select.value) || item.quantity + (existing?.quantity || 0) > product.stock[select.value]) {
+      showToast("선택한 옵션의 재고가 부족합니다.");
+      return renderCart();
+    }
+    if (existing) { existing.quantity += item.quantity; state.cart = state.cart.filter((entry) => entry !== item); }
+    else { item.size = select.value; item.key = `${item.id}-${select.value}`; }
+    save("blackFitCart", state.cart);
+    renderCart();
   });
   els.cartList.addEventListener("click", (event) => {
     const qty = event.target.closest("[data-cart-qty]");
@@ -945,7 +918,7 @@ function bind() {
     const code = els.couponInput.value.trim().toUpperCase();
     if (!code) {
       state.coupon = null;
-      localStorage.removeItem("blackFitCoupon");
+      save("blackFitCoupon", null);
       renderCart();
       return showToast("쿠폰 적용을 해제했습니다.");
     }
@@ -960,6 +933,8 @@ function bind() {
   els.mypageOpen.addEventListener("click", () => openLayer("my"));
   els.checkoutOpen.addEventListener("click", () => {
     if (!state.cart.length) return showToast("장바구니에 상품을 먼저 담아주세요.");
+    state.cart = Shop.cart();
+    if (!state.cart.length) return showToast("장바구니가 변경되었습니다. 상품을 다시 확인해주세요.");
     closeLayers();
     els.checkoutTotal.textContent = formatPrice(cartTotal().total);
     els.checkoutForm.hidden = false;
@@ -968,41 +943,44 @@ function bind() {
   });
   els.checkoutForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const orderNumber = `BF-${Date.now().toString().slice(-8)}`;
-    const orderedItems = state.cart.map((item) => ({ ...item }));
-    orderedItems.forEach((item) => {
-      const product = products.find((p) => p.id === item.id);
-      if (product?.stock?.[item.size] !== undefined) product.stock[item.size] = Math.max(0, product.stock[item.size] - item.quantity);
-    });
-    const total = cartTotal();
-    state.orders.unshift({
-      orderNumber,
-      items: orderedItems,
-      subtotal: total.subtotal,
-      discount: total.discount,
-      shipping: total.shipping,
-      coupon: state.coupon,
-      total: total.total,
-      status: "결제완료",
-      createdAt: new Date().toLocaleString("ko-KR")
-    });
-    save("blackFitOrders", state.orders);
-    save("blackFitProducts", products);
-    state.cart = [];
-    state.coupon = null;
-    save("blackFitCart", state.cart);
-    localStorage.removeItem("blackFitCoupon");
-    renderCart();
-    renderAdminOrders();
-    els.checkoutForm.reset();
-    els.checkoutForm.hidden = true;
-    els.orderComplete.hidden = false;
-    els.orderNumberText.textContent = `주문번호 ${orderNumber}`;
+    if (els.checkoutForm.dataset.pending) return;
+    const customer = { name: $("#orderName").value.trim(), phone: $("#orderPhone").value.trim(), address: $("#orderAddress").value.trim() };
+    if (!customer.name || !customer.address || !/^\+?[0-9 ()-]{7,24}$/.test(customer.phone) || !/^[0-9]{7,15}$/.test(customer.phone.replace(/\D/g, ""))) return showToast("수령인, 연락처와 배송지를 확인해주세요.");
+    products = Shop.products();
+    const latestCart = Shop.cart(products);
+    if (JSON.stringify(latestCart) !== JSON.stringify(state.cart)) {
+      state.cart = latestCart;
+      renderCart();
+      els.checkoutTotal.textContent = formatPrice(cartTotal().total);
+      return showToast("상품이나 장바구니가 변경되었습니다. 금액과 옵션을 확인한 뒤 다시 주문해주세요.");
+    }
+    if (!state.cart.length || state.cart.some((item) => item.quantity > getCartStock(item))) return showToast("품절 또는 재고가 부족한 옵션이 있습니다. 장바구니를 수정해주세요.");
+    els.checkoutForm.dataset.pending = "true";
+    try {
+      const orderNumber = `BF-${Date.now()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+      const orderedItems = Shop.clone(state.cart);
+      const updatedProducts = Shop.clone(products);
+      orderedItems.forEach((item) => { updatedProducts.find((product) => product.id === item.id).stock[item.size] -= item.quantity; });
+      const total = cartTotal();
+      const orders = [{ orderNumber, items: orderedItems, ...total, coupon: state.coupon, customer,
+        memo: $("#orderMemo").value.trim(), userId: state.user?.id || null,
+        status: "결제완료", demo: true, createdAt: new Date().toLocaleString("ko-KR") }, ...Shop.orders()];
+      if (!Shop.transaction({ blackFitOrders: orders, blackFitProducts: updatedProducts, blackFitCart: [], blackFitCoupon: null })) return;
+      products = updatedProducts;
+      state.orders = orders;
+      state.cart = [];
+      state.coupon = null;
+      refresh();
+      els.checkoutForm.reset();
+      els.checkoutForm.hidden = true;
+      els.orderComplete.hidden = false;
+      els.orderNumberText.textContent = `주문번호 ${orderNumber}`;
+    } finally { delete els.checkoutForm.dataset.pending; }
   });
   els.loginOpen.addEventListener("click", () => {
     if (state.user) {
       state.user = null;
-      localStorage.removeItem("blackFitUser");
+      save("blackFitUser", null);
       resetLoginForm();
       renderLogin();
       renderMyPage();
@@ -1015,6 +993,7 @@ function bind() {
     event.preventDefault();
     const id = els.loginEmail.value.trim();
     const password = els.loginPassword.value.trim();
+    if (!id || id.length > 80 || !password) return showToast("아이디와 비밀번호를 확인해주세요.");
     const isAdmin = id === "admin" && password === "admin";
     state.user = { role: isAdmin ? "admin" : "member", id };
     save("blackFitUser", state.user);
@@ -1026,8 +1005,10 @@ function bind() {
   els.adminOpen.addEventListener("click", () => openLayer("admin"));
   els.adminForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    const sizes = $("#adminSizes").value.split(",").map((size) => size.trim()).filter(Boolean);
+    const sizes = [...new Set($("#adminSizes").value.split(",").map((size) => size.trim()).filter(Boolean))];
+    const previous = products.find((item) => item.id === Number($("#adminProductId").value));
     const product = {
+      ...previous,
       id: Number($("#adminProductId").value) || Date.now(),
       name: $("#adminName").value.trim(),
       brand: $("#adminBrand").value.trim(),
@@ -1035,14 +1016,18 @@ function bind() {
       price: Number($("#adminPrice").value),
       discount: Number($("#adminDiscount").value),
       image: $("#adminImage").value.trim(),
+      hoverImage: $("#adminHoverImage").value.trim(),
       sizes,
       stock: parseStock($("#adminStock").value, sizes),
-      collections: [],
-      rating: 4.5,
+      collections: previous?.collections || [],
+      rating: previous?.rating || 0,
       isBest: $("#adminBest").checked,
       isNew: $("#adminNew").checked,
       createdAt: Number(new Date().toISOString().slice(0, 10).replaceAll("-", ""))
     };
+    const normalized = Shop.normalizeProduct(product);
+    if (!normalized || sizes.length !== normalized.sizes.length || Object.values(product.stock).some((count) => !Number.isInteger(count) || count < 0 || count > 100000)) return showToast("상품명, 가격, 이미지 경로와 옵션별 재고를 확인해주세요.");
+    Object.assign(product, normalized);
     const index = products.findIndex((item) => item.id === product.id);
     index >= 0 ? products[index] = product : products.unshift(product);
     save("blackFitProducts", products);
@@ -1055,6 +1040,7 @@ function bind() {
     const remove = event.target.closest("[data-admin-delete]");
     if (edit) fillAdmin(products.find((item) => item.id === Number(edit.dataset.adminEdit)));
     if (remove) {
+      if (!confirm("상품을 삭제할까요? 장바구니에서도 제외됩니다.")) return;
       products = products.filter((item) => item.id !== Number(remove.dataset.adminDelete));
       save("blackFitProducts", products);
       refresh();
@@ -1073,6 +1059,7 @@ function bind() {
   els.adminOrderList.addEventListener("click", (event) => {
     const remove = event.target.closest("[data-order-delete]");
     if (!remove) return;
+    if (!confirm("이 주문 내역을 삭제할까요?")) return;
     state.orders = state.orders.filter((order) => order.orderNumber !== remove.dataset.orderDelete);
     save("blackFitOrders", state.orders);
     renderAdminOrders();
@@ -1081,7 +1068,8 @@ function bind() {
   });
   els.adminResetForm.addEventListener("click", resetAdminForm);
   els.adminResetProducts.addEventListener("click", () => {
-    products = [...baseProducts];
+    if (!confirm("기본 상품과 재고를 복원할까요? 추가·수정한 상품 정보는 대체됩니다.")) return;
+    products = Shop.clone(baseProducts);
     save("blackFitProducts", products);
     refresh();
     resetAdminForm();
@@ -1090,8 +1078,13 @@ function bind() {
   els.backTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
   $(".newsletter")?.addEventListener("submit", (event) => {
     event.preventDefault();
+    const email = $("#newsletterEmail").value.trim().toLowerCase();
+    const stored = readStorage("blackFitNewsletter", []);
+    const subscribers = Array.isArray(stored) ? stored.filter((item) => typeof item === "string") : [];
+    if (subscribers.includes(email)) return showToast("이미 이 브라우저에 저장된 이메일입니다.");
+    save("blackFitNewsletter", [...subscribers, email]);
     event.currentTarget.reset();
-    showToast("뉴스레터 신청이 완료되었습니다.");
+    showToast("데모 구독 정보를 이 브라우저에 저장했습니다. 메일은 발송되지 않습니다.");
   });
   els.bottomNav.addEventListener("click", (event) => {
     const button = event.target.closest("[data-bottom-action]");
@@ -1103,7 +1096,15 @@ function bind() {
     if (button.dataset.bottomAction === "my") els.mypageOpen.click();
   });
   [els.cartClose, els.wishlistClose, els.mypageClose, els.orderClose, els.authClose, els.adminClose, els.checkoutClose, els.modalClose, els.orderDone, els.overlay].forEach((button) => button.addEventListener("click", closeLayers));
-  document.addEventListener("keydown", (event) => { if (event.key === "Escape") closeLayers(); });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") { closeLayers(); els.nav.classList.remove("open"); els.moreDropdown?.classList.remove("open"); }
+    if (event.key !== "Tab" || !activeLayer) return;
+    const focusable = [...activeLayer.querySelectorAll('button, input, select, textarea, a[href], [tabindex="0"]')].filter((element) => !element.disabled && element.getClientRects().length);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  });
 }
 
 function initReveal() {
@@ -1124,6 +1125,12 @@ function initReveal() {
 }
 
 function init() {
+  document.querySelectorAll(".dialog, .side-panel").forEach((layer) => {
+    layer.inert = true;
+    const heading = layer.querySelector("h2");
+    if (heading) { heading.id = `${layer.id}Title`; layer.setAttribute("aria-labelledby", heading.id); }
+    else layer.setAttribute("aria-label", "상품 상세");
+  });
   renderHome();
   renderFilters();
   renderProducts();
@@ -1133,8 +1140,20 @@ function init() {
   renderLogin();
   renderMyPage();
   renderAdmin();
+  window.addEventListener("storage", (event) => {
+    if (!event.key?.startsWith("blackFit")) return;
+    products = Shop.products(); state.cart = Shop.cart(products); state.orders = Shop.orders(); state.wishes = new Set(Shop.ids("blackFitWishes")); state.coupon = readStorage("blackFitCoupon", null);
+    refresh();
+    if (activeLayer === els.modal || activeLayer === els.checkoutModal) { closeLayers(); showToast("다른 탭에서 상품 또는 장바구니가 변경되었습니다. 다시 확인해주세요."); }
+  });
   bind();
   initReveal();
+  Shop.icons();
+  const query = new URLSearchParams(location.search);
+  if (query.get("cart") === "1") openLayer("cart");
+  if (query.get("checkout") === "1") els.checkoutOpen.click();
+  if (query.has("product")) openProduct(Number(query.get("product")));
 }
 
 init();
+}).catch(() => Shop.notify("화면을 준비하지 못했습니다. 저장 공간과 서버 연결을 확인한 뒤 새로고침해주세요."));

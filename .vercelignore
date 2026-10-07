@@ -1,0 +1,6 @@
+backend/
+.env
+.env.*
+.git/
+.venv/
+README.md

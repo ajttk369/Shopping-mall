@@ -58,10 +58,20 @@
     if (typeof value.name !== "string" || !value.name.trim() || typeof value.brand !== "string") return null;
     if (!categories.includes(value.category) || !Number.isSafeInteger(value.price) || value.price < 0 || value.price > 100000000) return null;
     if (!Number.isInteger(value.discount) || value.discount < 0 || value.discount > 80 || !imageUrl(value.image)) return null;
-    const sizes = [...new Set((Array.isArray(value.sizes) ? value.sizes : []).filter((size) => typeof size === "string" && size.trim() && size.length <= 24))].slice(0, 20);
+    const sizes = [...new Set((Array.isArray(value.sizes) ? value.sizes : []).filter((size) => typeof size === "string" && size.trim() && size.length <= 24 && !["__proto__", "constructor", "prototype"].includes(size)))].slice(0, 20);
     if (!sizes.length) return null;
     const stock = Object.fromEntries(sizes.map((size) => [size, Number.isInteger(value.stock?.[size]) ? Math.max(0, Math.min(100000, value.stock[size])) : 0]));
+    const details = value.details && typeof value.details === "object" ? value.details : {};
+    const measurements = Object.fromEntries(sizes.map((size) => {
+      const row = details.measurements?.[size];
+      const entries = row && typeof row === "object" ? Object.entries(row).filter(([label, number]) =>
+        typeof label === "string" && label.length <= 20 && !["__proto__", "constructor", "prototype"].includes(label) && Number.isFinite(number) && number > 0 && number <= 300).slice(0, 6) : [];
+      return [size, Object.fromEntries(entries)];
+    }).filter(([, row]) => Object.keys(row).length));
+    const cleanText = (text, limit) => typeof text === "string" ? text.trim().slice(0, limit) : "";
     return { ...value, name: value.name.slice(0, 160), brand: value.brand.slice(0, 80), image: imageUrl(value.image), hoverImage: imageUrl(value.hoverImage), sizes, stock,
+      details: { description: cleanText(details.description, 2000), material: cleanText(details.material, 300), fit: cleanText(details.fit, 300), care: cleanText(details.care, 1000), measurements },
+      gallery: [...new Set((Array.isArray(value.gallery) ? value.gallery : []).map(imageUrl).filter(Boolean))].slice(0, 8),
       rating: Number.isFinite(value.rating) ? Math.max(0, Math.min(5, value.rating)) : 0,
       createdAt: Number(value.createdAt) || 0, isBest: Boolean(value.isBest), isNew: Boolean(value.isNew),
       colors: (Array.isArray(value.colors) ? value.colors : []).filter((color) => /^#[0-9a-f]{6}$/i.test(color)),
@@ -72,7 +82,7 @@
     // A deliberately empty catalog is valid and must not trigger reseeding.
     const source = stored === null ? Shop.seed : Array.isArray(stored) ? stored : [];
     const seen = new Set();
-    return source.map(normalizeProduct).filter((item) => item && !seen.has(item.id) && seen.add(item.id));
+    return source.map((item) => item && normalizeProduct({ ...item, details: item.details ?? Shop.seed.find((seed) => seed.id === item.id)?.details })).filter((item) => item && !seen.has(item.id) && seen.add(item.id));
   }
   function cart(catalog = products()) {
     const stored = read("blackFitCart", []);
@@ -100,7 +110,12 @@
   }
   function orders() {
     const stored = read("blackFitOrders", []);
-    return Array.isArray(stored) ? stored.filter((order) => order && typeof order.orderNumber === "string" && Array.isArray(order.items) && order.items.every((item) => item && typeof item.name === "string") && Number.isFinite(order.total)) : [];
+    const seen = new Set();
+    return Array.isArray(stored) ? stored.filter((order) => order && typeof order.orderNumber === "string" && !seen.has(order.orderNumber) &&
+      Array.isArray(order.items) && order.items.length && order.items.every((item) => item && typeof item.name === "string" && Number.isSafeInteger(item.id) && item.id > 0 &&
+        typeof item.size === "string" && Number.isSafeInteger(item.quantity) && item.quantity > 0 && item.quantity <= 100000 && Number.isSafeInteger(item.price) && item.price >= 0) &&
+      Number.isSafeInteger(order.total) && order.total >= 0 && seen.add(order.orderNumber)).map((order) => ({ ...order,
+        status: ["결제완료", "배송준비", "배송중", "배송완료", "취소완료", "반품완료"].includes(order.status) ? order.status : typeof order.status === "string" && order.status ? order.status.slice(0, 40) : "결제완료" })) : [];
   }
   function ids(key) {
     const values = read(key, []);

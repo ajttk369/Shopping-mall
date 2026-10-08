@@ -14,7 +14,7 @@ const defaultReviews = {};
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const deliveryFee = 3000;
-const orderStatuses = ["결제완료", "배송준비", "배송중", "배송완료"];
+const orderStatuses = Shop.orderSteps;
 const categories = ["ALL", "OUTER", "TOP", "PANTS", "SHOES", "BAG", "ACC"];
 let toastTimer;
 
@@ -47,7 +47,6 @@ const state = {
   selectedSize: "",
   selectedQty: 1
 };
-state.orders = state.orders.map((order) => ({ ...order, status: orderStatuses.includes(order.status) ? order.status : "결제완료" }));
 
 const els = {
   siteHeader: $("#siteHeader"),
@@ -397,15 +396,12 @@ function renderCartRecommendations() {
 }
 
 function timelineMarkup(status) {
+  if (["취소완료", "반품완료"].includes(status)) return `<p class="order-terminal">${e(status)}</p>`;
   const activeIndex = orderStatuses.indexOf(status || "결제완료");
   return `<div class="order-timeline">${orderStatuses.map((item, index) => `<span class="${index <= activeIndex ? "active" : ""}">${item}</span>`).join("")}</div>`;
 }
 
 function renderMyPage() {
-  if (!state.user) {
-    els.mypageList.innerHTML = `<div class="cart-empty"><div><strong>로그인이 필요합니다.</strong><p>주문 내역과 회원 정보를 확인하려면 로그인해주세요.</p><button class="primary-btn" data-open-auth type="button">Login</button></div></div>`;
-    return;
-  }
   const wishCount = state.wishes.size;
   const recentCount = state.recent.length;
   const orderMarkup = state.orders.length ? state.orders.map((order) => `
@@ -422,9 +418,9 @@ function renderMyPage() {
   els.mypageList.innerHTML = `
     <section class="member-card">
       <span>Signed in as</span>
-      <strong>${e(state.user.id)}</strong>
-      <p>${state.user.role === "admin" ? "관리자 계정" : "일반 회원"} · 누적 주문 ${state.orders.length}건</p>
-      <div class="member-actions"><button class="ghost-btn" type="button" data-member-logout>로그아웃</button>${state.user.role === "admin" ? '<button class="primary-btn" type="button" data-member-admin>상품 관리</button>' : ""}</div>
+      <strong>${e(state.user?.id || "Guest")}</strong>
+      <p>${state.user?.role === "admin" ? "관리자 계정" : "내 주문"} · 누적 주문 ${state.orders.length}건</p>
+      ${state.user ? `<div class="member-actions"><button class="ghost-btn" type="button" data-member-logout>로그아웃</button>${state.user.role === "admin" ? '<button class="primary-btn" type="button" data-member-admin>상품 관리</button>' : ""}</div>` : ""}
     </section>
     <div class="member-metrics"><div><strong>${wishCount}</strong><span>Wishlist</span></div><div><strong>${recentCount}</strong><span>Viewed</span></div><div><strong>3</strong><span>Coupons</span></div></div>
     <p class="guide">이 브라우저에 저장된 모의 주문입니다. 실제 결제·배송은 진행되지 않습니다.</p>
@@ -434,6 +430,7 @@ function renderMyPage() {
 }
 
 function renderOrderDetail(orderNumber) {
+  state.orders = Shop.orders();
   const order = state.orders.find((item) => item.orderNumber === orderNumber);
   if (!order) return;
   els.orderDetail.innerHTML = `
@@ -441,13 +438,11 @@ function renderOrderDetail(orderNumber) {
       <span>${e(order.createdAt || "-")}</span>
       <h3>${e(order.orderNumber)}</h3>
       ${timelineMarkup(order.status)}
-      <div class="panel-subtitle">Items</div>
-      ${order.items.map((item) => `<div class="order-line"><img src="${e(Shop.imageUrl(item.image))}" alt="${e(item.name)}"><div><strong>${e(item.name)}</strong><p>Size ${e(item.size)} · ${e(item.quantity)}개</p></div><b>${formatPrice(item.price * item.quantity)}</b></div>`).join("")}
-      <div class="summary-lite"><span>결제 예정 금액</span><strong>${formatPrice(order.total)}</strong></div>
-      ${order.customer ? `<div class="delivery-detail"><strong>배송 정보</strong><p>${e(order.customer.name)} · ${e(order.customer.phone)}</p><p>${e(order.customer.address)}</p><p>${e(order.memo || "")}</p></div>` : ""}
+      ${Shop.orderDetail(order)}
       <p class="guide">모의 주문입니다. 실제 결제 및 배송은 진행되지 않습니다.</p>
     </article>
   `;
+  els.orderDetail.dataset.orderNumber = orderNumber;
   openLayer("order");
 }
 
@@ -462,10 +457,11 @@ function renderAdminOrders() {
         <strong>${e(order.orderNumber)}</strong>
         <p>${e(order.createdAt || "-")} · ${order.items.length}개 · ${formatPrice(order.total)}</p>
       </div>
-      <select data-order-status="${e(order.orderNumber)}">
-        ${orderStatuses.map((status) => `<option value="${status}" ${status === (order.status || "결제완료") ? "selected" : ""}>${status}</option>`).join("")}
+      <select data-order-status="${e(order.orderNumber)}" aria-label="${e(order.orderNumber)} 주문 상태" ${orderStatuses.indexOf(order.status) < 0 || order.status === "배송완료" ? "disabled" : ""}>
+        ${[order.status, orderStatuses[orderStatuses.indexOf(order.status) + 1]].filter((status, index) => status && (index === 0 || orderStatuses.includes(order.status))).map((status) => `<option value="${status}" ${status === order.status ? "selected" : ""}>${status}</option>`).join("")}
       </select>
-      <button class="order-delete-btn" type="button" data-order-delete="${e(order.orderNumber)}">삭제</button>
+      ${["취소완료", "반품완료"].includes(order.status) ? `<button class="order-delete-btn" type="button" data-order-delete="${e(order.orderNumber)}">삭제</button>` : ""}
+      ${order.claim ? `<div class="admin-claim"><strong>${e(order.claim.type)} · ${e(order.claim.status)}</strong><p>${e(order.claim.reason)}</p>${order.claim.type === "교환" && Array.isArray(order.claim.replacements) ? order.claim.replacements.map((item, index) => `<p>${e(item.name)} · ${e(order.items[index]?.size)} → ${e(item.size)}</p>`).join("") : ""}${["접수", "승인"].includes(order.claim.status) ? `<div class="order-actions"><button type="button" class="ghost-btn" data-claim-order="${e(order.orderNumber)}" data-claim-status="${order.claim.status === "접수" ? "승인" : "완료"}">${order.claim.status === "접수" ? "승인" : "처리 완료"}</button><button type="button" class="ghost-btn danger" data-claim-order="${e(order.orderNumber)}" data-claim-status="반려">반려</button></div>` : ""}</div>` : ""}
     </article>
   `).join("");
 }
@@ -518,7 +514,7 @@ function closeLayers() {
 }
 
 function gallery(product) {
-  return [...new Set([product.image, product.hoverImage].filter(Boolean))];
+  return Shop.productImages(product);
 }
 
 function reviewListMarkup(product) {
@@ -534,8 +530,8 @@ function reviewListMarkup(product) {
 
 function productTabMarkup(product, tab = "detail") {
   const contents = {
-    detail: `<div class="tab-panel"><strong>상품 설명</strong><p>도시적인 무드에 맞춘 BLACK FIT 큐레이션 아이템입니다. 군더더기 없는 실루엣과 실용적인 소재로 데일리 스타일에 자연스럽게 어울립니다.</p></div>`,
-    size: `<div class="tab-panel"><strong>사이즈 가이드</strong><p>선택 가능한 옵션입니다. 이 데모에는 상품별 실측 데이터가 등록되어 있지 않습니다.</p><div class="size-table">${product.sizes.map((size) => `<span>${e(size)}</span>`).join("")}</div></div>`,
+    detail: `<div class="tab-panel"><strong>상품 설명</strong>${Shop.productCopy(product)}</div>`,
+    size: `<div class="tab-panel"><strong>사이즈 가이드</strong>${Shop.sizeGuide(product)}</div>`,
     review: `<div class="tab-panel"><strong>리뷰 ${productReviews(product.id).length}개</strong>${reviewListMarkup(product)}<form class="review-form" data-review-form="${product.id}"><select name="rating"><option value="5">★★★★★</option><option value="4">★★★★☆</option><option value="3">★★★☆☆</option></select><input name="text" placeholder="리뷰를 입력하세요" maxlength="1000" required><button class="primary-btn" type="submit">작성</button></form></div>`,
     delivery: `<div class="tab-panel"><strong>배송/교환 안내</strong><p>기본 배송비는 3,000원이며 5만원 이상 무료 배송입니다. 수령 후 7일 이내 교환 및 반품 신청이 가능합니다.</p></div>`
   };
@@ -573,22 +569,31 @@ function openProduct(id) {
       <div class="modal-price"><span class="discount">${product.discount}%</span> <strong>${formatPrice(getSalePrice(product))}</strong></div>
       ${productSpecGrid(product)}
       <div class="purchase-box">
-        <p><strong>Size</strong></p>
+        <p><strong>사이즈</strong></p>
         <div class="size-options">
           ${product.sizes.map((size) => {
             const left = Number(product.stock?.[size] || 0);
-            return `<button class="size-button" data-size="${e(size)}" data-left="${left}" ${left <= 0 ? "disabled" : ""}>${e(size)}<small>${left <= 0 ? "품절" : `${left}개`}</small></button>`;
+            return `<button type="button" class="size-button" data-size="${e(size)}" data-left="${left}" aria-pressed="false" ${left <= 0 ? "disabled" : ""}>${e(size)}<small>${left <= 0 ? "품절" : `${left}개`}</small></button>`;
           }).join("")}
         </div>
-        <p><strong>Quantity</strong></p>
-        <div class="quantity-control"><button data-modal-qty="minus">-</button><span id="modalQty">1</span><button data-modal-qty="plus">+</button></div>
-        <p class="notice-text" id="modalNotice"></p>
-        <div class="modal-actions"><button class="ghost-btn full" id="addCartButton">장바구니 담기</button><button class="primary-btn full" id="buyButton">바로 구매</button></div>
+        <p><strong>수량</strong></p>
+        <div class="quantity-control"><button data-modal-qty="minus" aria-label="수량 줄이기" disabled>-</button><span id="modalQty">1</span><button data-modal-qty="plus" aria-label="수량 늘리기" disabled>+</button></div>
+        <div class="selection-summary" aria-live="polite"><span id="modalSelection">사이즈 선택 전</span><strong id="modalAmount">${formatPrice(getSalePrice(product))}</strong></div>
+        <p class="notice-text" id="modalNotice" role="status"></p>
+        <div class="modal-actions"><button class="ghost-btn full" id="addCartButton" ${totalStock(product) ? "" : "disabled"}>장바구니 담기</button><button class="primary-btn full" id="buyButton" ${totalStock(product) ? "" : "disabled"}>${totalStock(product) ? "바로 구매" : "품절"}</button></div>
       </div>
       <div id="productTabs">${productTabMarkup(product)}</div>
     </div>
   `;
   openLayer("modal");
+}
+
+function updateModalSelection() {
+  $("#modalSelection").textContent = state.selectedSize ? `${state.selectedSize} · ${state.selectedQty}개` : "사이즈 선택 전";
+  $("#modalAmount").textContent = formatPrice(getSalePrice(state.activeProduct) * state.selectedQty);
+  const stock = state.selectedSize ? state.activeProduct.stock[state.selectedSize] : 0;
+  $('[data-modal-qty="minus"]').disabled = !stock || state.selectedQty <= 1;
+  $('[data-modal-qty="plus"]').disabled = !stock || state.selectedQty >= stock;
 }
 
 function addToCart(product, size, quantity) {
@@ -642,6 +647,27 @@ function parseStock(value, sizes) {
 function resetAdminForm() {
   els.adminForm.reset();
   $("#adminProductId").value = "";
+  delete els.adminForm.dataset.productSnapshot;
+  renderMeasurements({});
+}
+
+function measurementValues() {
+  const rows = Object.create(null);
+  for (const input of $$("[data-measure-size]")) {
+    if (!input.value.trim()) continue;
+    const value = Number(input.value);
+    if (!Number.isFinite(value) || value <= 0 || value > 300) return null;
+    rows[input.dataset.measureSize] ||= Object.create(null);
+    rows[input.dataset.measureSize][input.dataset.measureLabel] = value;
+  }
+  return rows;
+}
+
+function renderMeasurements(rows = measurementValues() || {}) {
+  const defaults = { TOP: ["총장", "어깨", "가슴"], OUTER: ["총장", "어깨", "가슴"], PANTS: ["총장", "허리", "밑위"], SHOES: ["발길이", "발볼", "굽높이"], BAG: ["가로", "세로", "폭"], ACC: ["길이", "너비", "높이"] };
+  const labels = [...new Set([...Object.values(rows).flatMap((row) => Object.keys(row)), ...defaults[$("#adminCategory").value]])].slice(0, 6);
+  const sizes = [...new Set($("#adminSizes").value.split(",").map((value) => value.trim()).filter((value) => value && value.length <= 24))].slice(0, 20);
+  $("#adminMeasurements").innerHTML = sizes.map((size) => `<div class="measurement-input-row"><strong>${e(size)}</strong>${labels.map((label) => `<label>${e(label)}<input type="number" min="0.1" max="300" step="0.1" value="${rows[size]?.[label] ?? ""}" data-measure-size="${e(size)}" data-measure-label="${e(label)}"></label>`).join("")}</div>`).join("");
 }
 
 function resetLoginForm() {
@@ -651,6 +677,7 @@ function resetLoginForm() {
 }
 
 function fillAdmin(product) {
+  els.adminForm.dataset.productSnapshot = JSON.stringify(product);
   $("#adminProductId").value = product.id;
   $("#adminName").value = product.name;
   $("#adminBrand").value = product.brand;
@@ -661,6 +688,12 @@ function fillAdmin(product) {
   $("#adminHoverImage").value = product.hoverImage || "";
   $("#adminSizes").value = product.sizes.join(",");
   $("#adminStock").value = stockToInput(product.stock);
+  $("#adminDescription").value = product.details.description;
+  $("#adminMaterial").value = product.details.material;
+  $("#adminFit").value = product.details.fit;
+  $("#adminCare").value = product.details.care;
+  $("#adminGallery").value = product.gallery.join("\n");
+  renderMeasurements(product.details.measurements);
   $("#adminBest").checked = product.isBest;
   $("#adminNew").checked = product.isNew;
 }
@@ -675,6 +708,12 @@ function refresh() {
   renderRecent();
   renderMyPage();
   renderAdmin();
+}
+
+function renderCheckoutSummary() {
+  const amounts = cartTotal();
+  els.checkoutTotal.textContent = formatPrice(amounts.total);
+  $("#checkoutSummary").innerHTML = `<ul>${state.cart.map((item) => `<li><span>${e(item.name)} · ${e(item.size)} · ${item.quantity}개</span><b>${formatPrice(item.price * item.quantity)}</b></li>`).join("")}</ul>${Shop.amountBreakdown({ items: state.cart, ...amounts, coupon: state.coupon })}`;
 }
 
 function applyCollectionFilter(type, value) {
@@ -834,12 +873,14 @@ function bind() {
       sizeButton.classList.add("active");
       $("#modalQty").textContent = state.selectedQty;
       $("#modalNotice").textContent = "";
+      $$("[data-size]").forEach((button) => button.setAttribute("aria-pressed", button === sizeButton));
     }
     if (qtyButton) {
       const stock = state.selectedSize ? Number(state.activeProduct.stock?.[state.selectedSize] || 1) : 99;
       state.selectedQty = Math.max(1, Math.min(stock, state.selectedQty + (qtyButton.dataset.modalQty === "plus" ? 1 : -1)));
       $("#modalQty").textContent = state.selectedQty;
     }
+    if (sizeButton || qtyButton) updateModalSelection();
     if (tabButton) renderProductTabs(tabButton.dataset.tab);
     if (event.target.closest("#addCartButton") || event.target.closest("#buyButton")) {
       if (!state.selectedSize) {
@@ -936,12 +977,13 @@ function bind() {
     state.cart = Shop.cart();
     if (!state.cart.length) return showToast("장바구니가 변경되었습니다. 상품을 다시 확인해주세요.");
     closeLayers();
-    els.checkoutTotal.textContent = formatPrice(cartTotal().total);
+    state.coupon = Shop.read("blackFitCoupon", null);
+    renderCheckoutSummary();
     els.checkoutForm.hidden = false;
     els.orderComplete.hidden = true;
     openLayer("checkout");
   });
-  els.checkoutForm.addEventListener("submit", (event) => {
+  els.checkoutForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (els.checkoutForm.dataset.pending) return;
     const customer = { name: $("#orderName").value.trim(), phone: $("#orderPhone").value.trim(), address: $("#orderAddress").value.trim() };
@@ -951,31 +993,27 @@ function bind() {
     if (JSON.stringify(latestCart) !== JSON.stringify(state.cart)) {
       state.cart = latestCart;
       renderCart();
-      els.checkoutTotal.textContent = formatPrice(cartTotal().total);
+      renderCheckoutSummary();
       return showToast("상품이나 장바구니가 변경되었습니다. 금액과 옵션을 확인한 뒤 다시 주문해주세요.");
     }
     if (!state.cart.length || state.cart.some((item) => item.quantity > getCartStock(item))) return showToast("품절 또는 재고가 부족한 옵션이 있습니다. 장바구니를 수정해주세요.");
     els.checkoutForm.dataset.pending = "true";
+    const submit = els.checkoutForm.querySelector('button[type="submit"]');
+    submit.disabled = true;
     try {
-      const orderNumber = `BF-${Date.now()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-      const orderedItems = Shop.clone(state.cart);
-      const updatedProducts = Shop.clone(products);
-      orderedItems.forEach((item) => { updatedProducts.find((product) => product.id === item.id).stock[item.size] -= item.quantity; });
-      const total = cartTotal();
-      const orders = [{ orderNumber, items: orderedItems, ...total, coupon: state.coupon, customer,
-        memo: $("#orderMemo").value.trim(), userId: state.user?.id || null,
-        status: "결제완료", demo: true, createdAt: new Date().toLocaleString("ko-KR") }, ...Shop.orders()];
-      if (!Shop.transaction({ blackFitOrders: orders, blackFitProducts: updatedProducts, blackFitCart: [], blackFitCoupon: null })) return;
-      products = updatedProducts;
-      state.orders = orders;
+      const result = await Shop.placeOrder(Shop.clone(state.cart), state.coupon, customer, $("#orderMemo").value.trim(), state.user?.id || null);
+      if (result.error) { products = Shop.products(); state.cart = Shop.cart(products); state.coupon = Shop.read("blackFitCoupon", null); renderCart(); renderCheckoutSummary(); showToast(result.error); return; }
+      products = Shop.products();
+      state.orders = Shop.orders();
       state.cart = [];
       state.coupon = null;
       refresh();
       els.checkoutForm.reset();
       els.checkoutForm.hidden = true;
       els.orderComplete.hidden = false;
-      els.orderNumberText.textContent = `주문번호 ${orderNumber}`;
-    } finally { delete els.checkoutForm.dataset.pending; }
+      els.orderNumberText.textContent = `주문번호 ${result.order.orderNumber}`;
+      $("#orderView").dataset.orderDetail = result.order.orderNumber;
+    } finally { delete els.checkoutForm.dataset.pending; submit.disabled = false; }
   });
   els.loginOpen.addEventListener("click", () => {
     if (state.user) {
@@ -1003,10 +1041,21 @@ function bind() {
     showToast(isAdmin ? "관리자 계정으로 로그인했습니다." : "로그인되었습니다.");
   });
   els.adminOpen.addEventListener("click", () => openLayer("admin"));
+  $("#adminSizes").addEventListener("change", () => renderMeasurements());
+  $("#adminCategory").addEventListener("change", () => renderMeasurements());
+  Shop.bindOrderTools(els.orderDetail, (number) => {
+    products = Shop.products(); state.orders = Shop.orders(); refresh();
+    renderOrderDetail(number);
+    els.orderDetail.querySelector("h3").setAttribute("tabindex", "-1");
+    els.orderDetail.querySelector("h3").focus();
+  });
   els.adminForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const sizes = [...new Set($("#adminSizes").value.split(",").map((size) => size.trim()).filter(Boolean))];
     const previous = products.find((item) => item.id === Number($("#adminProductId").value));
+    const measurements = measurementValues();
+    const extraImages = $("#adminGallery").value.split(/\r?\n/).map((value) => value.trim()).filter(Boolean);
+    if (!measurements || extraImages.length > 8 || extraImages.some((image) => !Shop.imageUrl(image))) return showToast("실측 범위와 추가 이미지 경로를 확인해주세요.");
     const product = {
       ...previous,
       id: Number($("#adminProductId").value) || Date.now(),
@@ -1017,6 +1066,8 @@ function bind() {
       discount: Number($("#adminDiscount").value),
       image: $("#adminImage").value.trim(),
       hoverImage: $("#adminHoverImage").value.trim(),
+      gallery: extraImages,
+      details: { description: $("#adminDescription").value.trim(), material: $("#adminMaterial").value.trim(), fit: $("#adminFit").value.trim(), care: $("#adminCare").value.trim(), measurements },
       sizes,
       stock: parseStock($("#adminStock").value, sizes),
       collections: previous?.collections || [],
@@ -1028,9 +1079,15 @@ function bind() {
     const normalized = Shop.normalizeProduct(product);
     if (!normalized || sizes.length !== normalized.sizes.length || Object.values(product.stock).some((count) => !Number.isInteger(count) || count < 0 || count > 100000)) return showToast("상품명, 가격, 이미지 경로와 옵션별 재고를 확인해주세요.");
     Object.assign(product, normalized);
-    const index = products.findIndex((item) => item.id === product.id);
-    index >= 0 ? products[index] = product : products.unshift(product);
-    save("blackFitProducts", products);
+    const latest = Shop.products();
+    const current = latest.find((item) => item.id === product.id);
+    if (previous && (!current || JSON.stringify(current) !== els.adminForm.dataset.productSnapshot)) return showToast("다른 화면에서 상품이 변경되었습니다. 다시 선택해주세요.");
+    const reservedSizes = Shop.orders().filter((order) => !["취소완료", "반품완료"].includes(order.status)).flatMap((order) => [...order.items, ...(["접수", "승인"].includes(order.claim?.status) ? order.claim.replacements || [] : [])]).filter((item) => item.id === product.id).map((item) => item.size);
+    if (reservedSizes.some((size) => !product.sizes.includes(size))) return showToast("주문 또는 교환 신청에 사용된 사이즈는 삭제할 수 없습니다.");
+    const index = latest.findIndex((item) => item.id === product.id);
+    index >= 0 ? latest[index] = product : latest.unshift(product);
+    if (!Shop.save("blackFitProducts", latest)) return;
+    products = latest;
     resetAdminForm();
     refresh();
     showToast("상품 정보가 저장되었습니다.");
@@ -1041,36 +1098,55 @@ function bind() {
     if (edit) fillAdmin(products.find((item) => item.id === Number(edit.dataset.adminEdit)));
     if (remove) {
       if (!confirm("상품을 삭제할까요? 장바구니에서도 제외됩니다.")) return;
-      products = products.filter((item) => item.id !== Number(remove.dataset.adminDelete));
-      save("blackFitProducts", products);
+      const id = Number(remove.dataset.adminDelete);
+      if (Shop.orders().some((order) => !["취소완료", "반품완료"].includes(order.status) && order.items.some((item) => item.id === id))) return showToast("주문 이력이 있는 상품은 삭제할 수 없습니다. 재고를 0으로 설정할 수 있습니다.");
+      const latest = Shop.products().filter((item) => item.id !== id);
+      if (!Shop.save("blackFitProducts", latest)) return;
+      products = latest;
       refresh();
     }
   });
-  els.adminOrderList.addEventListener("change", (event) => {
+  els.adminOrderList.addEventListener("change", async (event) => {
     const select = event.target.closest("[data-order-status]");
     if (!select) return;
-    const order = state.orders.find((item) => item.orderNumber === select.dataset.orderStatus);
-    if (!order) return;
-    order.status = select.value;
-    save("blackFitOrders", state.orders);
-    renderMyPage();
-    showToast("주문 상태가 변경되었습니다.");
+    select.disabled = true;
+    const result = await Shop.changeOrder(select.dataset.orderStatus, "advance", { status: select.value });
+    state.orders = Shop.orders(); renderAdminOrders(); renderMyPage();
+    showToast(result.error || "주문 상태가 변경되었습니다.");
   });
-  els.adminOrderList.addEventListener("click", (event) => {
+  els.adminOrderList.addEventListener("click", async (event) => {
+    const claim = event.target.closest("[data-claim-order]");
+    if (claim) {
+      const reason = claim.dataset.claimStatus === "반려" ? prompt("반려 사유") : "";
+      if (reason === null || claim.disabled) return;
+      claim.disabled = true;
+      const result = await Shop.changeOrder(claim.dataset.claimOrder, "claim", { status: claim.dataset.claimStatus, reason });
+      products = Shop.products(); state.orders = Shop.orders(); refresh();
+      showToast(result.error || "신청 처리 상태가 변경되었습니다.");
+      return;
+    }
     const remove = event.target.closest("[data-order-delete]");
     if (!remove) return;
     if (!confirm("이 주문 내역을 삭제할까요?")) return;
-    state.orders = state.orders.filter((order) => order.orderNumber !== remove.dataset.orderDelete);
-    save("blackFitOrders", state.orders);
+    const result = await Shop.changeOrder(remove.dataset.orderDelete, "delete");
+    state.orders = Shop.orders();
     renderAdminOrders();
     renderMyPage();
-    showToast("주문이 삭제되었습니다.");
+    showToast(result.error || "주문이 삭제되었습니다.");
   });
   els.adminResetForm.addEventListener("click", resetAdminForm);
   els.adminResetProducts.addEventListener("click", () => {
-    if (!confirm("기본 상품과 재고를 복원할까요? 추가·수정한 상품 정보는 대체됩니다.")) return;
-    products = Shop.clone(baseProducts);
-    save("blackFitProducts", products);
+    if (!confirm("기본 상품 정보를 복원할까요? 주문 이력이 있는 상품의 현재 재고는 유지됩니다.")) return;
+    const latest = Shop.products();
+    const orderedIds = new Set(Shop.orders().flatMap((order) => order.items.map((item) => item.id)));
+    const restored = Shop.clone(baseProducts).map((product) => {
+      const current = latest.find((item) => item.id === product.id);
+      if (orderedIds.has(product.id) && current) { product.sizes = current.sizes; product.stock = current.stock; }
+      return product;
+    });
+    restored.push(...latest.filter((product) => orderedIds.has(product.id) && !restored.some((seed) => seed.id === product.id)));
+    if (!Shop.save("blackFitProducts", restored)) return;
+    products = restored;
     refresh();
     resetAdminForm();
   });
@@ -1124,9 +1200,14 @@ function init() {
   renderMyPage();
   renderAdmin();
   window.addEventListener("storage", (event) => {
-    if (!event.key?.startsWith("blackFit")) return;
+    if (event.key && !event.key.startsWith("blackFit")) return;
     products = Shop.products(); state.cart = Shop.cart(products); state.orders = Shop.orders(); state.wishes = new Set(Shop.ids("blackFitWishes")); state.coupon = readStorage("blackFitCoupon", null);
     refresh();
+    if (activeLayer === els.orderPanel) {
+      const number = els.orderDetail.dataset.orderNumber;
+      if (state.orders.some((order) => order.orderNumber === number)) renderOrderDetail(number);
+      else { closeLayers(); showToast("다른 탭에서 주문 정보가 변경되었습니다."); }
+    }
     if (activeLayer === els.modal || activeLayer === els.checkoutModal) { closeLayers(); showToast("다른 탭에서 상품 또는 장바구니가 변경되었습니다. 다시 확인해주세요."); }
   });
   bind();

@@ -296,6 +296,14 @@
           <label>착용 이미지<input id="adminHoverImage" type="text" maxlength="2000" placeholder="images/products/파일명.png 또는 https://..."></label>
           <label>사이즈<input id="adminSizes" placeholder="S,M,L" required></label>
           <label>사이즈별 재고<input id="adminStock" placeholder="S:4,M:8,L:0"></label>
+          <details class="admin-product-details"><summary>상품 상세 정보</summary>
+            <label>상품 설명<textarea id="adminDescription" maxlength="2000" rows="3"></textarea></label>
+            <label>소재<input id="adminMaterial" maxlength="300"></label>
+            <label>핏<input id="adminFit" maxlength="300"></label>
+            <label>관리 방법<textarea id="adminCare" maxlength="1000" rows="2"></textarea></label>
+            <label>추가 이미지 경로<textarea id="adminGallery" rows="3" maxlength="16000"></textarea></label>
+            <fieldset class="option-fieldset"><legend>사이즈별 실측 · cm</legend><div id="adminMeasurements"></div></fieldset>
+          </details>
           <div class="checks"><label><input id="adminBest" type="checkbox"> BEST</label><label><input id="adminNew" type="checkbox"> NEW</label></div>
           <button class="primary-btn full" type="submit">상품 저장</button>
           <button class="ghost-btn" id="adminResetForm" type="button">입력 초기화</button>
@@ -326,10 +334,11 @@
         <label>연락처<input id="orderPhone" type="tel" maxlength="24" autocomplete="off" required></label>
         <label>배송지<input id="orderAddress" maxlength="300" autocomplete="off" required></label>
         <label>배송 요청사항<input id="orderMemo" maxlength="500"></label>
+        <div id="checkoutSummary" class="checkout-summary"></div>
         <div class="checkout-total"><span>결제 예정 금액</span><strong id="checkoutTotal">0원</strong></div>
         <button class="primary-btn full" type="submit">모의 주문 완료하기</button>
       </form>
-      <div class="order-complete" id="orderComplete" hidden><strong>모의 주문이 완료되었습니다.</strong><p id="orderNumberText"></p><button class="ghost-btn" id="orderDone">쇼핑 계속하기</button></div>
+      <div class="order-complete" id="orderComplete" hidden><strong>모의 주문이 완료되었습니다.</strong><p id="orderNumberText"></p><button class="primary-btn" id="orderView" type="button">주문 상세 보기</button><button class="ghost-btn" id="orderDone" type="button">쇼핑 계속하기</button></div>
     </div>
   </section>
 
@@ -353,6 +362,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="store.js"></script>
+  <script src="commerce.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

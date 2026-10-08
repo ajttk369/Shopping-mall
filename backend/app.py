@@ -470,7 +470,7 @@ def subscribe_newsletter(request: Request, payload: NewsletterPayload):
 
 
 PUBLIC_FILES = {"index.html", "product.html", "search.html", "brand.html", "lookbook.html", "event.html", "mypage.html", "support.html",
-                "style.css", "script.js", "pages.js", "store.js", "catalog.json", "favicon.ico", "site.webmanifest", "browserconfig.xml"}
+                "style.css", "script.js", "pages.js", "store.js", "commerce.js", "catalog.json", "favicon.ico", "site.webmanifest", "browserconfig.xml"}
 
 
 class PublicFiles(StaticFiles):

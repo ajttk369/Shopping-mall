@@ -1,7 +1,7 @@
 Shop.ready.then(() => {
 "use strict";
 const e = Shop.escape;
-const pageProducts = Shop.products();
+let pageProducts = Shop.products();
 const pageBrands = [
   { name: "MONO LANE", copy: "기본에 집중한 미니멀 데일리웨어를 제안합니다.", image: "images/products/워셔블 데일리 반팔 니트_8color-model.png" },
   { name: "STUDIO LOW", copy: "편안한 소재와 실용적인 실루엣을 중심으로 전개합니다.", image: "images/products/와플 클래식 트랙탑 - 원더화이트-model.png" },
@@ -40,7 +40,7 @@ function renderProductPage() {
   document.title = `${product.name} | BLACK FIT`;
   const recent = [id, ...Shop.ids("blackFitRecent").filter((item) => item !== id)].slice(0, 8);
   Shop.save("blackFitRecent", recent);
-  const images = [...new Set([product.image, product.hoverImage].filter(Boolean))];
+  const images = Shop.productImages(product);
   const unavailable = !Object.values(product.stock).some((stock) => stock > 0);
   wrap.innerHTML = `<div class="product-page-gallery"><img id="detailMainImage" src="${e(images[0])}" alt="${e(product.name)}">
     <div class="modal-thumbs">${images.map((image, index) => `<button type="button" data-image="${e(image)}" class="${index === 0 ? "active" : ""}" aria-label="${index + 1}번 상품 사진"><img src="${e(image)}" alt=""></button>`).join("")}</div></div>
@@ -50,21 +50,29 @@ function renderProductPage() {
     <form class="purchase-box static" id="detailPurchase">
       <fieldset class="option-fieldset"><legend>사이즈</legend><div class="size-options">${product.sizes.map((size) => `<label class="size-choice"><input type="radio" name="size" value="${e(size)}" required ${product.stock[size] <= 0 ? "disabled" : ""}><span>${e(size)}<small>${product.stock[size] ? `${product.stock[size]}개` : "품절"}</small></span></label>`).join("")}</div></fieldset>
       <label class="detail-quantity">수량<input id="detailQty" type="number" min="1" max="100000" step="1" value="1" required></label>
+      <div class="selection-summary" aria-live="polite"><span id="detailSelection">사이즈 선택 전</span><strong id="detailAmount">${pageFormatPrice(Shop.salePrice(product))}</strong></div>
       <p class="notice-text" id="detailNotice" role="status"></p>
       <div class="modal-actions"><button class="ghost-btn full" type="submit" value="cart" ${unavailable ? "disabled" : ""}>장바구니 담기</button><button class="primary-btn full" type="submit" value="buy" ${unavailable ? "disabled" : ""}>${unavailable ? "품절" : "바로 구매"}</button></div>
       <a class="text-link" href="index.html?cart=1">장바구니 보기</a>
     </form>
-    <div class="sub-detail-copy"><h2>배송 / 교환</h2><p>상품 금액 5만원 이상 무료배송, 미만은 3,000원입니다. 수령 후 7일 이내 교환·반품 신청이 가능합니다.</p><p class="guide">모의 주문입니다. 실제 결제 및 배송은 진행되지 않습니다.</p></div></div>`;
+    <div class="sub-detail-copy"><h2>상품 정보</h2>${Shop.productCopy(product)}</div>
+    <details class="product-size-guide"><summary>사이즈 가이드</summary>${Shop.sizeGuide(product)}</details>
+    <div class="sub-detail-copy"><h2>배송 / 교환</h2><p>상품 금액 5만원 이상 무료배송, 미만은 3,000원입니다. 배송 완료 후 7일 이내 교환·반품 신청이 가능합니다.</p><p class="guide">모의 주문입니다. 실제 결제 및 배송은 진행되지 않습니다.</p></div></div>`;
   wrap.querySelectorAll("[data-image]").forEach((button) => button.addEventListener("click", () => {
     document.querySelector("#detailMainImage").src = button.dataset.image;
     wrap.querySelectorAll("[data-image]").forEach((item) => item.classList.toggle("active", item === button));
   }));
   const form = document.querySelector("#detailPurchase");
   const quantity = document.querySelector("#detailQty");
-  form.addEventListener("change", () => {
+  const updateSelection = () => {
     const size = new FormData(form).get("size");
-    if (size) { quantity.max = product.stock[size]; quantity.value = Math.min(Number(quantity.value) || 1, product.stock[size]); }
-  });
+    quantity.max = size ? product.stock[size] : 100000;
+    const count = Number(quantity.value);
+    document.querySelector("#detailSelection").textContent = size ? `${size} · ${count || 0}개` : "사이즈 선택 전";
+    document.querySelector("#detailAmount").textContent = pageFormatPrice(Shop.salePrice(product) * (Number.isSafeInteger(count) && count > 0 ? count : 0));
+  };
+  form.addEventListener("change", updateSelection);
+  quantity.addEventListener("input", updateSelection);
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     if (form.dataset.pending) return;
@@ -114,8 +122,7 @@ function renderMypagePage() {
   wrap.innerHTML = `<div class="member-metrics page-metrics"><div><strong>${orders.length}</strong><span>Orders</span></div><div><strong>${wishes.length}</strong><span>Wishlist</span></div><div><strong>3</strong><span>Coupons</span></div></div>
     <section class="sub-panel"><h2>주문 내역</h2><p class="guide">이 브라우저에 저장된 모의 주문입니다. 실제 결제 및 배송은 진행되지 않습니다.</p>
     ${orders.length ? orders.map((order) => `<article class="order-card"><div class="order-top"><strong>${e(order.orderNumber)}</strong><span>${e(order.status || "결제완료")}</span></div><p>${e(order.createdAt || "-")} · ${order.items.length}개 상품</p><b>${pageFormatPrice(order.total)}</b>
-      <details class="order-info"><summary>주문 상세</summary><ul>${order.items.map((item) => `<li>${e(item.name)} / ${e(item.size)} / ${e(item.quantity)}개</li>`).join("")}</ul>
-      ${order.customer ? `<p>${e(order.customer.name)} · ${e(order.customer.phone)}</p><p>${e(order.customer.address)}</p><p>${e(order.memo || "")}</p>` : ""}</details></article>`).join("") : '<p class="guide">아직 주문 내역이 없습니다.</p>'}</section>
+      <details class="order-info" data-order-number="${e(order.orderNumber)}"><summary>주문 상세</summary>${Shop.orderDetail(order)}</details></article>`).join("") : '<p class="guide">아직 주문 내역이 없습니다.</p>'}</section>
     ${wishes.length ? `<section class="sub-section saved-products"><h2>찜한 상품</h2><div class="sub-product-grid">${wishes.map(pageCard).join("")}</div></section>` : ""}`;
 }
 function updateCartLink() {
@@ -126,6 +133,19 @@ renderBrandPage();
 renderProductPage();
 renderSearchPage();
 renderMypagePage();
+const orderRoot = document.querySelector("#mypageDashboard");
+if (orderRoot) Shop.bindOrderTools(orderRoot, (number) => {
+  renderMypagePage();
+  const detail = [...orderRoot.querySelectorAll("[data-order-number]")].find((item) => item.dataset.orderNumber === number);
+  if (detail) { detail.open = true; detail.querySelector("summary").focus(); }
+});
+window.addEventListener("storage", (event) => {
+  if (event.key && !["blackFitProducts", "blackFitOrders", "blackFitCart"].includes(event.key)) return;
+  pageProducts = Shop.products();
+  if (document.querySelector("#productPageDetail")) renderProductPage();
+  renderMypagePage();
+  updateCartLink();
+});
 updateCartLink();
 Shop.icons();
 }).catch(() => Shop.notify("화면을 준비하지 못했습니다. 서버 연결과 저장 공간을 확인해주세요."));

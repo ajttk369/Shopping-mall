@@ -77,11 +77,12 @@ function renderProductPage() {
     event.preventDefault();
     if (form.dataset.pending) return;
     const size = new FormData(form).get("size");
-    const error = Shop.add(product.id, size, Number(quantity.value));
-    document.querySelector("#detailNotice").textContent = error || "장바구니에 상품을 담았습니다.";
+    const buying = event.submitter?.value === "buy";
+    const error = buying ? Shop.prepareBuy(product.id, size, Number(quantity.value)) : Shop.add(product.id, size, Number(quantity.value));
+    document.querySelector("#detailNotice").textContent = error || (buying ? "구매 정보를 준비했습니다." : "장바구니에 상품을 담았습니다.");
     if (error) return;
     updateCartLink();
-    if (event.submitter?.value === "buy") { form.dataset.pending = "true"; location.href = "index.html?checkout=1"; }
+    if (buying) { form.dataset.pending = "true"; location.href = "index.html?buy=1"; }
   });
 }
 function renderSearchPage() {
@@ -136,6 +137,7 @@ renderMypagePage();
 const orderRoot = document.querySelector("#mypageDashboard");
 if (orderRoot) Shop.bindOrderTools(orderRoot, (number) => {
   renderMypagePage();
+  updateCartLink();
   const detail = [...orderRoot.querySelectorAll("[data-order-number]")].find((item) => item.dataset.orderNumber === number);
   if (detail) { detail.open = true; detail.querySelector("summary").focus(); }
 });

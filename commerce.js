@@ -26,7 +26,7 @@
   }
   function canRequest(order) {
     const age = Date.now() - Date.parse(order.deliveredAt);
-    return order.status === "배송완료" && (!order.claim || order.claim.status === "반려") && Number.isFinite(age) && age >= 0 && age <= returnWindow;
+    return order.status === "배송완료" && (!order.claim || ["반려", "철회"].includes(order.claim.status)) && Number.isFinite(age) && age >= 0 && age <= returnWindow;
   }
   function orderTools(order) {
     const number = e(order.orderNumber);
@@ -34,6 +34,9 @@
     const claimMarkup = claim ? `<div class="claim-summary"><strong>${e(claim.type)} · ${e(claim.status)}</strong><p>${e(claim.reason)}</p>${claim.resolution ? `<p>${e(claim.resolution)}</p>` : ""}</div>` : "";
     const history = Array.isArray(order.history) ? `<details class="order-history"><summary>처리 이력</summary><ul>${order.history.map((entry) => `<li>${e(entry?.status)} <time>${e(new Date(entry?.at).toLocaleString("ko-KR"))}</time></li>`).join("")}</ul></details>` : "";
     const cancel = order.status === "결제완료" ? `<button type="button" class="ghost-btn danger" data-cancel-order="${number}">주문 취소</button>` : "";
+    const rebuy = `<button type="button" class="ghost-btn" data-reorder="${number}" title="현재 가격과 재고 기준으로 장바구니에 담기">다시 담기</button>`;
+    const withdraw = claim?.status === "접수" ? `<button type="button" class="ghost-btn" data-withdraw-claim="${number}">신청 철회</button>` : "";
+    const editDelivery = order.status === "결제완료" ? `<details class="order-request"><summary>배송지 수정</summary><form data-order-delivery="${number}" class="claim-form"><label>수령인<input name="name" maxlength="60" autocomplete="off" value="${e(order.customer?.name)}" required></label><label>연락처<input name="phone" type="tel" maxlength="24" autocomplete="off" value="${e(order.customer?.phone)}" required></label><label>배송지<input name="address" maxlength="300" autocomplete="off" value="${e(order.customer?.address)}" required></label><label>배송 요청사항<textarea name="memo" maxlength="500" rows="2">${e(order.memo)}</textarea></label><button type="submit" class="primary-btn">배송지 저장</button></form></details>` : "";
     const catalog = Shop.products();
     const exchangeRows = order.items.map((item, index) => {
       const product = catalog.find((entry) => entry.id === item.id);
@@ -41,7 +44,7 @@
     }).join("");
     const request = canRequest(order) ? `<details class="order-request"><summary>교환 / 반품 신청</summary><form data-order-request="${number}" class="claim-form"><label>신청 유형<select name="type"><option>반품</option><option>교환</option></select></label><div class="exchange-options" hidden>${exchangeRows}</div><label>신청 사유<textarea name="reason" maxlength="500" rows="3" required></textarea></label><button class="primary-btn" type="submit">신청 접수</button></form></details>` : "";
     const closed = order.status === "배송완료" && !canRequest(order) && !claim ? `<p class="guide">${order.deliveredAt ? "교환·반품 신청 기간이 지났습니다." : "배송 완료일 정보가 없습니다."}</p>` : "";
-    return `${claimMarkup}<div class="order-actions">${cancel}</div>${request}${closed}${history}<p class="order-feedback" role="status" aria-live="polite"></p>`;
+    return `${claimMarkup}<div class="order-actions">${rebuy}${cancel}${withdraw}</div>${editDelivery}${request}${closed}${history}<p class="order-feedback" role="status" aria-live="polite"></p>`;
   }
   function orderDetail(order) {
     return `<div class="order-lines">${order.items.map((item) => `<div class="order-line"><img src="${e(Shop.imageUrl(item.image))}" alt="${e(item.name)}" loading="lazy"><div><strong>${e(item.name)}</strong><p>${e(item.size)} · ${item.quantity}개 · ${money(item.price)}</p></div><b>${money(item.price * item.quantity)}</b></div>`).join("")}</div>${amountBreakdown(order)}${order.customer ? `<div class="delivery-detail"><strong>배송 정보</strong><p>${e(order.customer.name)} · ${e(order.customer.phone)}</p><p>${e(order.customer.address)}</p>${order.memo ? `<p>${e(order.memo)}</p>` : ""}</div>` : ""}${orderTools(order)}`;
@@ -70,20 +73,32 @@
     }
     for (const { product, size, quantity } of changes.values()) product.stock[size] += quantity;
   }
-  function placeOrder(expectedCart, coupon, customer, memo, userId) {
+  function validCustomer(customer) {
+    if (!customer || !["name", "phone", "address"].every((key) => typeof customer[key] === "string")) return null;
+    const cleaned = Object.fromEntries(Object.entries(customer).filter(([key]) => ["name", "phone", "address"].includes(key)).map(([key, value]) => [key, value.trim()]));
+    return cleaned.name && cleaned.name.length <= 60 && cleaned.address && cleaned.address.length <= 300 && /^\+?[0-9 ()-]{7,24}$/.test(cleaned.phone) && /^[0-9]{7,15}$/.test(cleaned.phone.replace(/\D/g, "")) ? cleaned : null;
+  }
+  function placeOrder(expectedCart, coupon, customer, memo, userId, mode = "cart") {
     return withOrderLock(() => {
+      customer = validCustomer(customer);
+      if (!customer || typeof memo !== "string" || memo.length > 500 || !["cart", "direct"].includes(mode)) return { error: "수령인, 연락처와 배송지를 확인해주세요." };
       const storedOrders = JSON.parse(localStorage.getItem("blackFitOrders") ?? "[]");
       const existingOrders = Shop.orders();
       if (!Array.isArray(storedOrders) || storedOrders.length !== existingOrders.length) return { error: "저장된 주문 형식을 확인해주세요. 기존 주문은 변경하지 않았습니다." };
       const catalog = Shop.products();
-      const items = Shop.cart(catalog);
+      const fullCart = Shop.cart(catalog);
+      const direct = mode === "direct" ? Shop.directPurchase(catalog) : null;
+      const items = mode === "direct" ? (direct ? [direct] : []) : fullCart.filter((item) => item.selected);
       if (!items.length || JSON.stringify(items) !== JSON.stringify(expectedCart) || Shop.read("blackFitCoupon", null) !== coupon) return { error: "상품·옵션·쿠폰이 변경되었습니다. 장바구니를 다시 확인해주세요." };
       try { restoreStock(catalog, items, -1); } catch { return { error: "품절 또는 재고가 부족한 옵션이 있습니다." }; }
       const orderNumber = `BF-${Date.now()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
       const now = new Date().toISOString();
       const order = { orderNumber, items, ...Shop.totals(items, coupon), coupon, customer, memo, userId, status: "결제완료", demo: true,
         createdAt: new Date().toLocaleString("ko-KR"), createdAtISO: now, history: [{ status: "결제완료", at: now }] };
-      return Shop.transaction({ blackFitOrders: [order, ...existingOrders], blackFitProducts: catalog, blackFitCart: [], blackFitCoupon: null }) ? { order } : { error: "주문을 저장하지 못했습니다." };
+      const remaining = mode === "direct" ? fullCart : fullCart.filter((item) => !item.selected);
+      const values = { blackFitOrders: [order, ...existingOrders], blackFitProducts: catalog, blackFitCart: remaining, blackFitCoupon: remaining.length ? coupon : null };
+      if (mode === "direct") values.blackFitBuyNow = null;
+      return Shop.transaction(values) ? { order } : { error: "주문을 저장하지 못했습니다." };
     });
   }
   function changeOrder(number, action, payload = {}) {
@@ -95,7 +110,30 @@
       if (!order) return { error: "주문을 찾을 수 없습니다." };
       const catalog = Shop.products();
       let stockChanged = false;
-      if (action === "cancel") {
+      if (action === "reorder") {
+        const items = Shop.cart(catalog);
+        for (const previous of order.items) {
+          const found = items.find((item) => item.id === previous.id && item.size === previous.size);
+          const quantity = (found?.quantity || 0) + previous.quantity;
+          const item = Shop.purchaseItem(previous.id, previous.size, quantity, catalog);
+          if (!item) return { error: `${previous.name}의 옵션 또는 재고가 부족합니다. 상품을 개별 확인해주세요.` };
+          if (found) Object.assign(found, item);
+          else items.push(item);
+        }
+        return Shop.save("blackFitCart", items) ? { order, message: "주문 상품을 현재 가격으로 장바구니에 담았습니다." } : { error: "장바구니에 담지 못했습니다." };
+      } else if (action === "delivery") {
+        const customer = validCustomer(payload.customer);
+        if (order.status !== "결제완료") return { error: "배송 준비 전 주문만 배송지를 수정할 수 있습니다." };
+        if (!customer || typeof payload.memo !== "string" || payload.memo.length > 500) return { error: "수령인·연락처·배송지와 요청사항을 확인해주세요." };
+        order.customer = customer;
+        order.memo = payload.memo.trim();
+        historyEntry(order, "배송지 수정");
+      } else if (action === "withdraw") {
+        if (order.status !== "배송완료" || order.claim?.status !== "접수") return { error: "승인 전 접수 상태에서만 신청을 철회할 수 있습니다." };
+        order.claim.status = "철회";
+        order.claim.updatedAt = new Date().toISOString();
+        historyEntry(order, `${order.claim.type} 철회`);
+      } else if (action === "cancel") {
         if (order.status !== "결제완료" || order.stockRestoredAt) return { error: "취소 가능한 주문이 아닙니다. 최신 상태를 확인해주세요." };
         try { restoreStock(catalog, order.items); } catch { return { error: "상품·옵션 정보가 변경되어 재고를 복구할 수 없습니다." }; }
         order.status = "취소완료";
@@ -157,13 +195,21 @@
       control.disabled = true;
       try {
         const result = await changeOrder(number, action, payload);
-        if (result.error) { if (feedback) feedback.textContent = result.error; else Shop.notify(result.error); }
-        else await onChange(number);
+        if (result.error) { if (feedback) { feedback.dataset.kind = "error"; feedback.textContent = result.error; } else Shop.notify(result.error); }
+        else {
+          await onChange(number);
+          const message = [...root.querySelectorAll(".order-card, .order-detail-card")].find((card) => card.querySelector(`[data-reorder]`)?.dataset.reorder === number)?.querySelector(".order-feedback");
+          if (message) { message.dataset.kind = "success"; message.textContent = result.message || "변경 내용을 저장했습니다."; }
+        }
       } finally { delete root.dataset.orderBusy; if (control.isConnected) control.disabled = false; }
     };
     root.addEventListener("click", (event) => {
       const button = event.target.closest("[data-cancel-order]");
       if (button && confirm("주문을 취소하고 상품 재고를 복구할까요?")) showResult(button, button.dataset.cancelOrder, "cancel");
+      const rebuy = event.target.closest("[data-reorder]");
+      if (rebuy) showResult(rebuy, rebuy.dataset.reorder, "reorder");
+      const withdraw = event.target.closest("[data-withdraw-claim]");
+      if (withdraw && confirm("접수한 교환·반품 신청을 철회할까요?")) showResult(withdraw, withdraw.dataset.withdrawClaim, "withdraw");
     });
     root.addEventListener("change", (event) => {
       if (event.target.name !== "type") return;
@@ -171,6 +217,13 @@
       if (options) options.hidden = event.target.value !== "교환";
     });
     root.addEventListener("submit", (event) => {
+      const delivery = event.target.closest("[data-order-delivery]");
+      if (delivery) {
+        event.preventDefault();
+        const data = new FormData(delivery);
+        showResult(delivery.querySelector('button[type="submit"]'), delivery.dataset.orderDelivery, "delivery", { customer: { name: data.get("name"), phone: data.get("phone"), address: data.get("address") }, memo: data.get("memo") });
+        return;
+      }
       const form = event.target.closest("[data-order-request]");
       if (!form) return;
       event.preventDefault();

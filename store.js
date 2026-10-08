@@ -93,7 +93,8 @@
       if (!product || !product.sizes.includes(item.size) || !Number.isSafeInteger(item.quantity) || item.quantity < 1) continue;
       const key = `${product.id}-${item.size}`;
       const quantity = Math.min(100000, item.quantity + (grouped.get(key)?.quantity || 0));
-      grouped.set(key, { key, id: product.id, name: product.name, brand: product.brand, image: product.image, price: salePrice(product), size: item.size, quantity });
+      const selected = item.selected !== false || grouped.get(key)?.selected === true;
+      grouped.set(key, { key, id: product.id, name: product.name, brand: product.brand, image: product.image, price: salePrice(product), size: item.size, quantity, selected });
     }
     return [...grouped.values()];
   }
@@ -104,9 +105,22 @@
     if (!product || !product.sizes.includes(size) || !Number.isSafeInteger(quantity) || quantity < 1) return "상품과 옵션을 다시 확인해주세요.";
     const found = items.find((item) => item.id === productId && item.size === size);
     if ((found?.quantity || 0) + quantity > product.stock[size]) return "선택한 옵션의 재고를 초과했습니다.";
-    if (found) found.quantity += quantity;
-    else items.push({ key: `${productId}-${size}`, id: productId, name: product.name, brand: product.brand, image: product.image, price: salePrice(product), size, quantity });
+    if (found) { found.quantity += quantity; found.selected = true; }
+    else items.push({ key: `${productId}-${size}`, id: productId, name: product.name, brand: product.brand, image: product.image, price: salePrice(product), size, quantity, selected: true });
     return save("blackFitCart", items) ? "" : "장바구니를 저장하지 못했습니다.";
+  }
+  function purchaseItem(id, size, quantity, catalog = products()) {
+    const product = catalog.find((item) => item.id === id);
+    if (!product || !product.sizes.includes(size) || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > product.stock[size]) return null;
+    return { key: `${id}-${size}`, id, name: product.name, brand: product.brand, image: product.image, price: salePrice(product), size, quantity, selected: true };
+  }
+  function prepareBuy(id, size, quantity) {
+    if (!purchaseItem(id, size, quantity)) return "상품 옵션과 구매 가능한 수량을 확인해주세요.";
+    return save("blackFitBuyNow", { id, size, quantity }) ? "" : "구매 정보를 저장하지 못했습니다.";
+  }
+  function directPurchase(catalog = products()) {
+    const intent = read("blackFitBuyNow", null);
+    return intent && typeof intent === "object" ? purchaseItem(intent.id, intent.size, intent.quantity, catalog) : null;
   }
   function orders() {
     const stored = read("blackFitOrders", []);
@@ -130,7 +144,7 @@
   }
   const icons = () => window.lucide?.createIcons({ attrs: { "stroke-width": 1.7 } });
   document.addEventListener("DOMContentLoaded", icons, { once: true });
-  const Shop = window.Shop = { escape, clone, read, save, transaction, notify, imageUrl, normalizeProduct, products, cart, add, orders, ids, salePrice, totals, icons, seed: [] };
+  const Shop = window.Shop = { escape, clone, read, save, transaction, notify, imageUrl, normalizeProduct, products, cart, add, purchaseItem, prepareBuy, directPurchase, orders, ids, salePrice, totals, icons, seed: [] };
   Shop.ready = fetch("catalog.json", { cache: "no-cache" }).then((response) => {
     if (!response.ok) throw new Error("catalog");
     return response.json();

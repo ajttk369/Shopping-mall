@@ -45,7 +45,9 @@ const state = {
   user: (() => { const user = readStorage("blackFitUser", null); return user && typeof user.id === "string" ? { id: user.id.slice(0, 80), role: user.role === "admin" ? "admin" : "member" } : null; })(),
   activeProduct: null,
   selectedSize: "",
-  selectedQty: 1
+  selectedQty: 1,
+  checkoutMode: "cart",
+  checkoutItems: []
 };
 
 const els = {
@@ -329,8 +331,12 @@ function couponDiscount(subtotal) {
   return { discount: 0, shippingFree: false, label: "" };
 }
 
-function cartTotal() {
-  const subtotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+function selectedCart() {
+  return state.cart.filter((item) => item.selected);
+}
+
+function cartTotal(items = selectedCart()) {
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const coupon = couponDiscount(subtotal);
   const shipping = subtotal && subtotal < 50000 && !coupon.shippingFree ? deliveryFee : 0;
   return { subtotal, discount: coupon.discount, shipping, total: Math.max(0, subtotal - coupon.discount + shipping), coupon };
@@ -345,7 +351,13 @@ function renderCart() {
   const count = state.cart.reduce((sum, item) => sum + item.quantity, 0);
   const { subtotal, discount, shipping, total, coupon } = cartTotal();
   els.cartCount.textContent = count;
-  els.checkoutOpen.disabled = !state.cart.length;
+  const selected = selectedCart();
+  els.checkoutOpen.disabled = !selected.length;
+  els.checkoutOpen.textContent = selected.length ? `선택 상품 주문 (${selected.length})` : "선택 상품 주문";
+  $("#cartSelectionTools").hidden = !state.cart.length;
+  $("#cartSelectAll").checked = state.cart.length > 0 && selected.length === state.cart.length;
+  $("#cartSelectAll").indeterminate = selected.length > 0 && selected.length < state.cart.length;
+  $("#cartSelectionCount").textContent = `${selected.length}/${state.cart.length}종 선택`;
   $("#shippingHint").textContent = !subtotal ? "" : shipping ? `${formatPrice(50000 - subtotal)} 더 담으면 무료배송` : "무료배송이 적용되었습니다.";
   els.subtotalPrice.textContent = formatPrice(subtotal);
   els.discountPrice.textContent = discount ? `-${formatPrice(discount)}` : "0원";
@@ -360,6 +372,7 @@ function renderCart() {
   }
   els.cartList.innerHTML = state.cart.map((item) => `
     <article class="cart-item">
+      <input type="checkbox" class="cart-item-check" data-cart-selected="${e(item.key)}" aria-label="${e(item.name)} ${e(item.size)} 구매 선택" ${item.selected ? "checked" : ""}>
       <img src="${e(Shop.imageUrl(item.image))}" alt="${e(item.name)}">
       <div><strong>${e(item.name)}</strong><label class="cart-option">옵션<select data-cart-size="${e(item.key)}" aria-label="${e(item.name)} 옵션">${(products.find((product) => product.id === item.id)?.sizes || []).map((size) => `<option value="${e(size)}" ${size === item.size ? "selected" : ""} ${(products.find((product) => product.id === item.id)?.stock[size] || 0) < item.quantity && size !== item.size ? "disabled" : ""}>${e(size)}</option>`).join("")}</select></label><p>재고 ${getCartStock(item)}개</p><b>${formatPrice(item.price * item.quantity)}</b>
         <div class="cart-controls"><button class="qty-button" data-cart-qty="minus" data-key="${e(item.key)}">-</button><span>${item.quantity}</span><button class="qty-button" data-cart-qty="plus" data-key="${e(item.key)}">+</button></div>
@@ -711,9 +724,26 @@ function refresh() {
 }
 
 function renderCheckoutSummary() {
-  const amounts = cartTotal();
+  const amounts = cartTotal(state.checkoutItems);
   els.checkoutTotal.textContent = formatPrice(amounts.total);
-  $("#checkoutSummary").innerHTML = `<ul>${state.cart.map((item) => `<li><span>${e(item.name)} · ${e(item.size)} · ${item.quantity}개</span><b>${formatPrice(item.price * item.quantity)}</b></li>`).join("")}</ul>${Shop.amountBreakdown({ items: state.cart, ...amounts, coupon: state.coupon })}`;
+  $("#checkoutSummary").innerHTML = `<h3>${state.checkoutMode === "direct" ? "바로 구매" : "선택 상품"}</h3><ul>${state.checkoutItems.map((item) => `<li><span>${e(item.name)} · ${e(item.size)} · ${item.quantity}개</span><b>${formatPrice(item.price * item.quantity)}</b></li>`).join("")}</ul>${Shop.amountBreakdown({ items: state.checkoutItems, ...amounts, coupon: state.coupon })}`;
+}
+
+function openCheckout(mode = "cart") {
+  products = Shop.products();
+  state.cart = Shop.cart(products);
+  const direct = mode === "direct" ? Shop.directPurchase(products) : null;
+  const items = mode === "direct" ? (direct ? [direct] : []) : selectedCart();
+  if (!items.length) return showToast(mode === "direct" ? "구매 옵션 또는 재고가 변경되었습니다. 상품을 다시 선택해주세요." : "주문할 상품을 선택해주세요.");
+  if (items.some((item) => item.quantity > getCartStock(item))) return showToast("선택 상품의 재고가 부족합니다. 수량을 확인해주세요.");
+  state.checkoutMode = mode;
+  state.checkoutItems = Shop.clone(items);
+  state.coupon = Shop.read("blackFitCoupon", null);
+  closeLayers();
+  renderCheckoutSummary();
+  els.checkoutForm.hidden = false;
+  els.orderComplete.hidden = true;
+  openLayer("checkout");
 }
 
 function applyCollectionFilter(type, value) {
@@ -887,11 +917,11 @@ function bind() {
         $("#modalNotice").textContent = "사이즈를 선택해주세요.";
         return;
       }
-      if (!addToCart(state.activeProduct, state.selectedSize, state.selectedQty)) return;
       if (event.target.closest("#buyButton")) {
-        closeLayers();
-        els.checkoutOpen.click();
-      }
+        const error = Shop.prepareBuy(state.activeProduct.id, state.selectedSize, state.selectedQty);
+        if (error) { $("#modalNotice").textContent = error; return; }
+        openCheckout("direct");
+      } else addToCart(state.activeProduct, state.selectedSize, state.selectedQty);
     }
   });
   els.modalBody.addEventListener("submit", (event) => {
@@ -912,6 +942,17 @@ function bind() {
     showToast("리뷰가 등록되었습니다.");
   });
   els.cartList.addEventListener("change", (event) => {
+    const checkbox = event.target.closest("[data-cart-selected]");
+    if (checkbox) {
+      const cart = Shop.cart();
+      const item = cart.find((entry) => entry.key === checkbox.dataset.cartSelected);
+      if (item) item.selected = checkbox.checked;
+      if (!Shop.save("blackFitCart", cart)) { renderCart(); return; }
+      state.cart = cart;
+      renderCart();
+      [...els.cartList.querySelectorAll("[data-cart-selected]")].find((input) => input.dataset.cartSelected === checkbox.dataset.cartSelected)?.focus();
+      return;
+    }
     const select = event.target.closest("[data-cart-size]");
     if (!select) return;
     products = Shop.products();
@@ -924,12 +965,13 @@ function bind() {
       showToast("선택한 옵션의 재고가 부족합니다.");
       return renderCart();
     }
-    if (existing) { existing.quantity += item.quantity; state.cart = state.cart.filter((entry) => entry !== item); }
+    if (existing) { existing.quantity += item.quantity; existing.selected ||= item.selected; state.cart = state.cart.filter((entry) => entry !== item); }
     else { item.size = select.value; item.key = `${item.id}-${select.value}`; }
     save("blackFitCart", state.cart);
     renderCart();
   });
   els.cartList.addEventListener("click", (event) => {
+    products = Shop.products(); state.cart = Shop.cart(products);
     const qty = event.target.closest("[data-cart-qty]");
     const remove = event.target.closest("[data-remove]");
     if (qty) {
@@ -972,41 +1014,51 @@ function bind() {
   els.cartOpen.addEventListener("click", () => openLayer("cart"));
   els.wishlistOpen.addEventListener("click", () => openLayer("wish"));
   els.mypageOpen.addEventListener("click", () => openLayer("my"));
-  els.checkoutOpen.addEventListener("click", () => {
-    if (!state.cart.length) return showToast("장바구니에 상품을 먼저 담아주세요.");
-    state.cart = Shop.cart();
-    if (!state.cart.length) return showToast("장바구니가 변경되었습니다. 상품을 다시 확인해주세요.");
-    closeLayers();
-    state.coupon = Shop.read("blackFitCoupon", null);
-    renderCheckoutSummary();
-    els.checkoutForm.hidden = false;
-    els.orderComplete.hidden = true;
-    openLayer("checkout");
+  $("#cartSelectAll").addEventListener("change", (event) => {
+    const cart = Shop.cart().map((item) => ({ ...item, selected: event.target.checked }));
+    if (!Shop.save("blackFitCart", cart)) { renderCart(); return; }
+    state.cart = cart; renderCart();
   });
+  $("#cartRemoveSelected").addEventListener("click", () => {
+    const cart = Shop.cart();
+    if (!cart.some((item) => item.selected)) return showToast("삭제할 상품을 선택해주세요.");
+    if (!confirm("선택한 상품을 장바구니에서 삭제할까요?")) return;
+    if (!Shop.save("blackFitCart", cart.filter((item) => !item.selected))) return;
+    state.cart = Shop.cart(); renderCart();
+  });
+  els.checkoutOpen.addEventListener("click", () => openCheckout());
   els.checkoutForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (els.checkoutForm.dataset.pending) return;
     const customer = { name: $("#orderName").value.trim(), phone: $("#orderPhone").value.trim(), address: $("#orderAddress").value.trim() };
     if (!customer.name || !customer.address || !/^\+?[0-9 ()-]{7,24}$/.test(customer.phone) || !/^[0-9]{7,15}$/.test(customer.phone.replace(/\D/g, ""))) return showToast("수령인, 연락처와 배송지를 확인해주세요.");
     products = Shop.products();
-    const latestCart = Shop.cart(products);
-    if (JSON.stringify(latestCart) !== JSON.stringify(state.cart)) {
-      state.cart = latestCart;
+    state.cart = Shop.cart(products);
+    const direct = state.checkoutMode === "direct" ? Shop.directPurchase(products) : null;
+    const latestItems = state.checkoutMode === "direct" ? (direct ? [direct] : []) : selectedCart();
+    if (JSON.stringify(latestItems) !== JSON.stringify(state.checkoutItems)) {
+      state.checkoutItems = Shop.clone(latestItems);
       renderCart();
       renderCheckoutSummary();
       return showToast("상품이나 장바구니가 변경되었습니다. 금액과 옵션을 확인한 뒤 다시 주문해주세요.");
     }
-    if (!state.cart.length || state.cart.some((item) => item.quantity > getCartStock(item))) return showToast("품절 또는 재고가 부족한 옵션이 있습니다. 장바구니를 수정해주세요.");
+    if (!state.checkoutItems.length || state.checkoutItems.some((item) => item.quantity > getCartStock(item))) return showToast("품절 또는 재고가 부족한 옵션이 있습니다. 상품을 다시 확인해주세요.");
     els.checkoutForm.dataset.pending = "true";
     const submit = els.checkoutForm.querySelector('button[type="submit"]');
     submit.disabled = true;
     try {
-      const result = await Shop.placeOrder(Shop.clone(state.cart), state.coupon, customer, $("#orderMemo").value.trim(), state.user?.id || null);
-      if (result.error) { products = Shop.products(); state.cart = Shop.cart(products); state.coupon = Shop.read("blackFitCoupon", null); renderCart(); renderCheckoutSummary(); showToast(result.error); return; }
+      const result = await Shop.placeOrder(Shop.clone(state.checkoutItems), state.coupon, customer, $("#orderMemo").value.trim(), state.user?.id || null, state.checkoutMode);
+      if (result.error) {
+        products = Shop.products(); state.cart = Shop.cart(products); state.coupon = Shop.read("blackFitCoupon", null);
+        const currentDirect = state.checkoutMode === "direct" ? Shop.directPurchase(products) : null;
+        state.checkoutItems = state.checkoutMode === "direct" ? (currentDirect ? [currentDirect] : []) : selectedCart();
+        renderCart(); renderCheckoutSummary(); showToast(result.error); return;
+      }
       products = Shop.products();
       state.orders = Shop.orders();
-      state.cart = [];
-      state.coupon = null;
+      state.cart = Shop.cart(products);
+      state.coupon = Shop.read("blackFitCoupon", null);
+      state.checkoutItems = [];
       refresh();
       els.checkoutForm.reset();
       els.checkoutForm.hidden = true;
@@ -1215,6 +1267,7 @@ function init() {
   const query = new URLSearchParams(location.search);
   if (query.get("cart") === "1") openLayer("cart");
   if (query.get("checkout") === "1") els.checkoutOpen.click();
+  if (query.get("buy") === "1") openCheckout("direct");
   if (query.has("product")) openProduct(Number(query.get("product")));
 }
 
